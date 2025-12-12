@@ -66,12 +66,21 @@
         
         /* 選中狀態：高對比色 */
         input[type="radio"]:checked + span, 
-        input[type="checkbox"]:checked + span {
+        input[type="checkbox"]:checked + span,
+        input[type="checkbox"]:checked + div {
             background-color: #DD6B20; /* 深橘色，對比度更高 */
             color: white;
             border-color: #DD6B20;
             font-weight: bold;
             box-shadow: 0 4px 6px rgba(221, 107, 32, 0.4);
+        }
+        
+        /* 複選題選中時，調整內部文字顏色 (針對新的 div 結構) */
+        input[type="checkbox"]:checked + div .text-gray-600 {
+            color: #FED7D7; /* 選中後，副標題變淡粉色，避免在深橘底上看不太清楚 */
+        }
+        input[type="checkbox"]:checked + div .font-bold {
+            color: white;
         }
 
         /* 選項文字容器：允許換行 */
@@ -185,35 +194,63 @@
                         </div>
                     </div>
 
-                    <!-- Q3 (複選) -->
+                    <!-- Q3 (複選) - 優化排版 -->
                     <div class="mb-10 border-b-2 border-gray-100 pb-8 question-group" data-type="checkbox" data-name="q3_risks[]" data-label="第3題 (遇到的風險)">
                         <p class="text-xl font-bold mb-4 text-gray-900">
                             3. (複選) 課程中提到了許多 SP 可能遇到的風險。請問下列哪些狀況是您 <span class="text-orange-600 underline">曾經遇過</span> 或 <span class="text-orange-600 underline">最擔心</span> 的？ <span class="text-red-500">*</span>
                         </p>
-                        <div class="flex flex-col gap-1">
-                            <label class="option-label rounded-xl">
+                        <div class="flex flex-col gap-3"> <!-- gap-3 增加選項間距 -->
+                            
+                            <!-- 選項 1 -->
+                            <label class="option-label rounded-xl p-4 h-auto items-start">
                                 <input type="checkbox" name="q3_risks[]" value="考生互動(粗魯/不適接觸)" class="hidden">
-                                <span class="text-option-span text-lg">
-                                    😰 <b>考生(學生)互動</b>：態度粗魯、語氣不好 (例如被吼)，或有不舒服的身體接觸
-                                </span>
+                                <div class="w-full flex flex-col text-left">
+                                    <span class="text-lg font-bold text-gray-800 mb-1 flex items-center">
+                                        😰 考生(學生)互動：
+                                    </span>
+                                    <span class="text-base text-gray-600 leading-relaxed pl-1">
+                                        態度粗魯、語氣不好 (例如被吼)，或有不舒服的身體接觸
+                                    </span>
+                                </div>
                             </label>
-                            <label class="option-label rounded-xl">
+
+                            <!-- 選項 2 -->
+                            <label class="option-label rounded-xl p-4 h-auto items-start">
                                 <input type="checkbox" name="q3_risks[]" value="考官互動(改劇本/責備)" class="hidden">
-                                <span class="text-option-span text-lg">
-                                    😓 <b>考官(老師)互動</b>：臨時要求改劇本、責備演不好，或忽略我的不適
-                                </span>
+                                <div class="w-full flex flex-col text-left">
+                                    <span class="text-lg font-bold text-gray-800 mb-1 flex items-center">
+                                        😓 考官(老師)互動：
+                                    </span>
+                                    <span class="text-base text-gray-600 leading-relaxed pl-1">
+                                        臨時要求改劇本、責備演不好，或忽略我的不適
+                                    </span>
+                                </div>
                             </label>
-                            <label class="option-label rounded-xl">
+
+                            <!-- 選項 3 -->
+                            <label class="option-label rounded-xl p-4 h-auto items-start">
                                 <input type="checkbox" name="q3_risks[]" value="行政互動(排程滿/資訊不清)" class="hidden">
-                                <span class="text-option-span text-lg">
-                                    😖 <b>訓練/行政互動</b>：排程太滿沒休息(如間隔僅1分鐘)、劇本資訊不清楚
-                                </span>
+                                <div class="w-full flex flex-col text-left">
+                                    <span class="text-lg font-bold text-gray-800 mb-1 flex items-center">
+                                        😖 訓練/行政互動：
+                                    </span>
+                                    <span class="text-base text-gray-600 leading-relaxed pl-1">
+                                        排程太滿沒休息 (如間隔僅1分鐘)、劇本資訊不清楚
+                                    </span>
+                                </div>
                             </label>
-                            <label class="option-label rounded-xl">
+
+                            <!-- 選項 4 -->
+                            <label class="option-label rounded-xl p-4 h-auto items-start">
                                 <input type="checkbox" name="q3_risks[]" value="情緒影響(劇本強烈)" class="hidden">
-                                <span class="text-option-span text-lg">
-                                    🥺 <b>情緒影響</b>：劇本內容太過強烈(如家暴/癌症)，觸發我個人的傷心回憶
-                                </span>
+                                <div class="w-full flex flex-col text-left">
+                                    <span class="text-lg font-bold text-gray-800 mb-1 flex items-center">
+                                        🥺 情緒影響：
+                                    </span>
+                                    <span class="text-base text-gray-600 leading-relaxed pl-1">
+                                        劇本內容太過強烈 (如家暴/癌症)，觸發我個人的傷心回憶
+                                    </span>
+                                </div>
                             </label>
                         </div>
                     </div>
