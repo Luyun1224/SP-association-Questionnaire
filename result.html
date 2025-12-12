@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇美醫院國考標準化病人培訓工作坊成效儀表板</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js 圖表庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 字體設定 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts for Sticky Notes (Handwritten style) -->
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F8FAFC; color: #334155; }
+        
+        /* 卡片通用樣式 */
+        .card { 
+            background: white; 
+            border-radius: 16px; 
+            padding: 24px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); 
+            border: 1px solid #E2E8F0;
+        }
+        .chart-container { position: relative; height: 320px; width: 100%; margin-top: 1rem; }
+        
+        /* 洞察區塊 */
+        .insight-box {
+            background-color: #FFF7ED; 
+            border-left: 4px solid #F97316; 
+            padding: 12px 16px;
+            margin-top: 16px;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.9rem;
+            color: #9A3412;
+            line-height: 1.6;
+        }
+
+        /* 便利貼樣式 */
+        .sticky-wall {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            padding: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .sticky-note {
+            background-color: #FEF08A; 
+            padding: 20px;
+            border-radius: 2px;
+            box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
+            font-family: 'Kalam', cursive, 'Noto Sans TC', sans-serif; /* 手寫風字體優先 */
+            font-size: 1.1rem;
+            line-height: 1.4;
+            color: #4B5563;
+            transform: rotate(-1deg);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 140px;
+            position: relative;
+        }
+        /* 釘子效果 */
+        .sticky-note::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #EF4444; /* 紅色釘子 */
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            z-index: 5;
+        }
+
+        .sticky-note:hover {
+            transform: rotate(0deg) scale(1.05);
+            z-index: 10;
+            box-shadow: 6px 12px 20px rgba(0,0,0,0.15);
+        }
+        .sticky-note:nth-child(2n) { background-color: #BAE6FD; transform: rotate(2deg); } 
+        .sticky-note:nth-child(3n) { background-color: #FECACA; transform: rotate(-1.5deg); } 
+        .sticky-note:nth-child(4n) { background-color: #BBF7D0; transform: rotate(1.5deg); } 
+
+        /* 卷軸美化 */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+        /* 載入動畫 */
+        .loader {
+            border: 4px solid #E2E8F0;
+            border-top: 4px solid #F97316;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Hero 區塊背景設定 */
+        .hero-bg {
+            /* 預設深藍色漸層，您可稍後在 style 中替換為您的圖片 URL */
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)), url('https://source.unsplash.com/1600x900/?hospital,medical,team'); 
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 導覽列 -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <!-- Logo / Icon -->
+                    <div class="bg-orange-500 text-white p-1.5 rounded-lg">
+                        <i class="fa-solid fa-hospital-user text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800 tracking-wide">奇美醫院國考標準化病人培訓工作坊成效儀表板</h1>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-wider">Dashboard</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-[10px] text-gray-400 uppercase">Last Updated</p>
+                        <p class="text-xs font-bold text-gray-600 font-mono" id="lastUpdateTime">--:--</p>
+                    </div>
+                    <button onclick="fetchData()" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center shadow-sm">
+                        <i class="fa-solid fa-rotate-right mr-2 text-orange-500"></i>
+                        重新整理
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主視覺版面 (Hero Section) - 參考風格設計 -->
+    <div class="hero-bg text-white relative overflow-hidden">
+        <!-- 裝飾光暈 -->
+        <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-orange-500/10 to-transparent pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- 左側：標題與資訊 -->
+                <div class="space-y-6">
+                    <div>
+                        <span class="bg-orange-500 text-white px-3 py-1 rounded text-xs font-bold tracking-wider mb-3 inline-block">奇美醫院 • 臨床技能中心</span>
+                        <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-2">
+                            國考標準化病人<br>培訓工作坊
+                        </h1>
+                        <div class="flex items-center text-gray-300 text-sm space-x-4">
+                            <span><i class="fa-regular fa-calendar mr-1"></i> 2025年12月14日</span>
+                            <span><i class="fa-solid fa-location-dot mr-1"></i> 奇美醫院第五醫療大樓</span>
+                        </div>
+                    </div>
+
+                    <!-- 講師名單 (依照需求更新) -->
+                    <div class="border-l-4 border-orange-500 pl-4 py-1 bg-black/20 rounded-r-lg">
+                        <p class="text-xs text-orange-300 font-bold uppercase tracking-wider mb-2">講師團隊 / Faculty</p>
+                        <p class="text-sm text-gray-200 leading-relaxed space-y-1">
+                            <span class="block"><strong class="text-white">陳淑宇</strong> 理事長 (台灣標準化病人協會)</span>
+                            <span class="block"><strong class="text-white">王明淑</strong> 技術主任 (馬偕紀念醫院)</span>
+                            <span class="block"><strong class="text-white">連靖婷</strong> 理事 (台灣標準化病人協會)</span>
+                            <span class="block"><strong class="text-white">鍾玉梅</strong> 講師 (馬偕紀念醫院/馬偕護專)</span>
+                            <span class="block"><strong class="text-white">陳皓羽</strong> 專員 (臺北醫學大學)</span>
+                            <span class="block"><strong class="text-white">陳虹蓁</strong> 管理員 (臺北醫學大學)</span>
+                        </p>
+                    </div>
+
+                    <!-- 主辦與協辦單位 -->
+                    <div class="text-xs text-gray-300 space-y-1">
+                        <p><span class="text-orange-400">● 主辦單位：</span>台灣標準化病人協會、奇美醫療財團法人奇美醫院</p>
+                        <p><span class="text-orange-400">● 協辦單位：</span>台灣醫學教育學會、奇美醫療財團法人奇美醫院教學部、臨床技能中心</p>
+                    </div>
+                </div>
+
+                <!-- 右側：數據概覽與照片 (模擬圖) -->
+                <div class="relative hidden lg:block">
+                    <!-- 模擬合照區塊 -->
+                    <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 relative group">
+                        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                             alt="工作坊合照" 
+                             class="w-full h-64 object-cover transform group-hover:scale-105 transition duration-700 opacity-80 group-hover:opacity-100">
+                        
+                        <!-- 懸浮數據卡片 -->
+                        <div class="absolute bottom-4 right-4 flex space-x-3">
+                            <div class="bg-gray-900/80 backdrop-blur px-4 py-2 rounded-lg text-center border border-gray-700">
+                                <div class="text-xs text-gray-400">培訓人數</div>
+                                <div class="text-xl font-bold text-white" id="heroTotalCount">--</div>
+                            </div>
+                            <div class="bg-orange-600/90 backdrop-blur px-4 py-2 rounded-lg text-center border border-orange-500">
+                                <div class="text-xs text-white/80">課程滿意度</div>
+                                <div class="text-xl font-bold text-white">High</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 三格卡片：重新設計符合「國考培訓」的內容 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                <!-- Card 1: 心理安全 -->
+                <div class="bg-gray-900/40 backdrop-blur-sm border border-white/10 p-6 rounded-xl hover:bg-gray-900/60 transition duration-300 group">
+                    <div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-500 transition">
+                        <i class="fa-solid fa-shield-heart text-orange-400 group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">心理安全與邊界</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        建立 SP 的心理韌性，確保在演出與教學中能自我保護，營造<span class="text-orange-300">安全且專業</span>的模擬環境。
+                    </p>
+                </div>
+
+                <!-- Card 2: 國考標準 -->
+                <div class="bg-gray-900/40 backdrop-blur-sm border border-white/10 p-6 rounded-xl hover:bg-gray-900/60 transition duration-300 group">
+                    <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500 transition">
+                        <i class="fa-solid fa-clipboard-check text-blue-400 group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">國考高標擬真</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        針對病史詢問、身體檢查與病情解釋進行分站演練，精準掌握<span class="text-blue-300">OSCE國考</span>評分標準。
+                    </p>
+                </div>
+
+                <!-- Card 3: 雙向回饋 -->
+                <div class="bg-gray-900/40 backdrop-blur-sm border border-white/10 p-6 rounded-xl hover:bg-gray-900/60 transition duration-300 group">
+                    <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-500 transition">
+                        <i class="fa-solid fa-comments text-green-400 group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">雙向回饋優化</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        透過講師與學員的綜合討論，即時修正演出盲點，提升標準化病人的<span class="text-green-300">教學品質</span>。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 數據內容區 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8 relative z-20">
+        
+        <!-- 載入中畫面 -->
+        <div id="loading" class="text-center py-20 bg-white rounded-2xl shadow-lg">
+            <div class="loader"></div>
+            <p class="text-gray-500 mt-4 font-medium animate-pulse">正在同步雲端數據...</p>
+        </div>
+
+        <!-- 儀表板內容 (預設隱藏) -->
+        <div id="dashboardContent" class="hidden space-y-10">
+            
+            <!-- KPI 指標卡 (量化數據) -->
+            <div class="flex items-center space-x-2 mb-4">
+                <div class="w-1 h-6 bg-orange-500 rounded-full"></div>
+                <h2 class="text-xl font-bold text-gray-800">量化數據圖表</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- 總回收數 -->
+                <div class="card border-l-4 border-blue-500 hover:shadow-lg transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Total Feedback</p>
+                            <h3 class="text-3xl font-bold text-blue-600 mt-1" id="totalCount">0</h3>
+                        </div>
+                        <div class="p-2 bg-blue-50 rounded-lg text-blue-500"><i class="fa-solid fa-file-signature"></i></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">有效問卷回收數</p>
+                </div>
+                
+                <!-- 信心指數 -->
+                <div class="card border-l-4 border-orange-500 hover:shadow-lg transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Self-Confidence</p>
+                            <h3 class="text-3xl font-bold text-orange-600 mt-1" id="avgConfidence">0%</h3>
+                        </div>
+                        <div class="p-2 bg-orange-50 rounded-lg text-orange-500"><i class="fa-solid fa-shield-halved"></i></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">自我保護信心 (High)</p>
+                </div>
+
+                <!-- 未來意願 -->
+                <div class="card border-l-4 border-green-500 hover:shadow-lg transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Willingness</p>
+                            <h3 class="text-3xl font-bold text-green-600 mt-1" id="futureWillingness">0%</h3>
+                        </div>
+                        <div class="p-2 bg-green-50 rounded-lg text-green-500"><i class="fa-solid fa-thumbs-up"></i></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">未來擔任意願 (High)</p>
+                </div>
+
+                <!-- 行政滿意度 -->
+                <div class="card border-l-4 border-purple-500 hover:shadow-lg transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Satisfaction</p>
+                            <h3 class="text-3xl font-bold text-purple-600 mt-1" id="adminSatisfaction">0%</h3>
+                        </div>
+                        <div class="p-2 bg-purple-50 rounded-lg text-purple-500"><i class="fa-solid fa-star"></i></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">行政安排滿意度</p>
+                </div>
+            </div>
+
+            <!-- 第一列圖表 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- 年齡分佈 -->
+                <div class="card flex flex-col h-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">👥 學員年齡分佈</h3>
+                    </div>
+                    <div class="chart-container flex-grow">
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                    <div class="insight-box" id="ageInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
+                </div>
+                
+                <!-- 心理安全感受 -->
+                <div class="card flex flex-col h-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">❤️ 心理安全課程感受</h3>
+                    </div>
+                    <div class="chart-container flex-grow">
+                        <canvas id="safetyChart"></canvas>
+                    </div>
+                    <div class="insight-box" id="safetyInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
+                </div>
+            </div>
+
+            <!-- 第二列圖表 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 風險分析 -->
+                <div class="card lg:col-span-2 flex flex-col">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">⚠️ SP 常見困擾與風險分析</h3>
+                        <p class="text-xs text-gray-400 mt-1">複選題統計：學員勾選「曾經遇過」或「最擔心」的狀況</p>
+                    </div>
+                    <div class="chart-container flex-grow">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+                    <div class="insight-box" id="riskInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
+                </div>
+
+                <!-- 學習需求 -->
+                <div class="card flex flex-col">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">📚 進階課程許願池</h3>
+                    </div>
+                    <div class="chart-container flex-grow">
+                        <canvas id="futureChart"></canvas>
+                    </div>
+                    <div class="insight-box" id="futureInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
+                </div>
+            </div>
+
+            <!-- 第三列圖表：技能掌握度 -->
+            <div class="card">
+                <div class="mb-6 border-b border-gray-100 pb-4">
+                    <h3 class="text-lg font-bold text-gray-800">💪 分站演練技能掌握度</h3>
+                    <p class="text-sm text-gray-500 mt-1">綠色佔比越高，代表教學成效越好</p>
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="skillChart"></canvas>
+                </div>
+                <div class="insight-box" id="skillInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
+            </div>
+
+            <!-- 質性回饋區 (便利貼牆) -->
+            <div class="space-y-8">
+                <div class="flex items-center space-x-2">
+                    <div class="w-1 h-6 bg-blue-500 rounded-full"></div>
+                    <h2 class="text-xl font-bold text-gray-800">質性回饋與建議</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- 印象深刻 -->
+                    <div class="bg-orange-50/50 rounded-2xl p-6 border border-orange-100">
+                        <h3 class="text-lg font-bold text-orange-800 mb-6 flex items-center">
+                            <span class="bg-orange-100 p-2 rounded-lg mr-2 text-xl">💡</span> 
+                            大家印象最深刻的學習點
+                        </h3>
+                        <div id="insightList" class="sticky-wall custom-scrollbar">
+                            <!-- 便利貼插入處 -->
+                        </div>
+                    </div>
+
+                    <!-- 建議與鼓勵 -->
+                    <div class="bg-blue-50/50 rounded-2xl p-6 border border-blue-100">
+                        <h3 class="text-lg font-bold text-blue-800 mb-6 flex items-center">
+                            <span class="bg-blue-100 p-2 rounded-lg mr-2 text-xl">💌</span> 
+                            給團隊的建議與鼓勵
+                        </h3>
+                        <div id="suggestionList" class="sticky-wall custom-scrollbar">
+                            <!-- 便利貼插入處 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-500 text-sm">© 2025 台灣標準化病人協會 & 奇美醫院臨床技能中心</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxJmJau-yuYnO3EvfmgCiEFiPVpn02YKhoce20aKJVXS39K9454m9gun4U6nmz1nVgu/exec';
+
+        // 翻譯字典
+        const LABEL_MAP = {
+            'touched': '覺得溫暖 (被保護)',
+            'useful': '很有收穫 (調適心情)',
+            'normal': '感覺普通',
+            'confused': '有點抽象 (不太懂)',
+            'student_rude': '考生互動 (態度粗魯)',
+            'examiner_change': '考官互動 (臨時改劇本/責備)',
+            'admin_schedule': '行政互動 (排程太滿)',
+            'emotional_trigger': '情緒影響 (劇本觸發)',
+            'acting': '表演技巧',
+            'medical': '醫學知識',
+            'feedback': '回饋技巧',
+            'makeup': '特殊化妝',
+            'other': '其他',
+            'confident': '很有信心',
+            'high': '信心滿滿',
+            'good': '舒適順暢'
+        };
+
+        const safeStr = (val) => {
+            if (val === null || val === undefined) return '';
+            return String(val);
+        };
+
+        const translateLabel = (text) => {
+            const cleanText = text.trim();
+            return LABEL_MAP[cleanText] || cleanText;
+        };
+
+        Chart.defaults.font.family = "'Noto Sans TC', sans-serif";
+        Chart.defaults.color = '#64748B';
+
+        document.addEventListener('DOMContentLoaded', fetchData);
+
+        async function fetchData() {
+            const loading = document.getElementById('loading');
+            const content = document.getElementById('dashboardContent');
+            const timeLabel = document.getElementById('lastUpdateTime');
+            
+            loading.classList.remove('hidden');
+            content.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
+                const data = await response.json();
+
+                if (!Array.isArray(data)) throw new Error("資料格式錯誤");
+
+                updateDashboard(data);
+                
+                const now = new Date();
+                timeLabel.innerText = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
+                loading.classList.add('hidden');
+                content.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('讀取資料失敗，請確認 Apps Script 網址正確。\n' + error.message);
+                loading.classList.add('hidden');
+            }
+        }
+
+        function updateDashboard(data) {
+            // KPI
+            document.getElementById('totalCount').innerText = data.length;
+            document.getElementById('heroTotalCount').innerText = data.length; // Hero 區塊的人數
+            
+            const confidentCount = data.filter(d => {
+                const val = safeStr(d['自我保護信心']);
+                return val.includes('很有信心') || val.includes('confident');
+            }).length;
+            document.getElementById('avgConfidence').innerText = data.length ? Math.round((confidentCount / data.length) * 100) + '%' : '0%';
+
+            const futureCount = data.filter(d => {
+                const val = safeStr(d['未來信心']);
+                return val.includes('信心滿滿') || val.includes('high');
+            }).length;
+            document.getElementById('futureWillingness').innerText = data.length ? Math.round((futureCount / data.length) * 100) + '%' : '0%';
+
+            const adminCount = data.filter(d => {
+                const val = safeStr(d['行政安排感受']);
+                return val.includes('舒適順暢') || val.includes('good');
+            }).length;
+            document.getElementById('adminSatisfaction').innerText = data.length ? Math.round((adminCount / data.length) * 100) + '%' : '0%';
+
+            // Charts
+            drawAgeChart(data);
+            drawSafetyChart(data);
+            drawRiskChart(data);
+            drawSkillChart(data);
+            drawFutureChart(data);
+            
+            // Sticky Notes
+            fillStickyNotes('insightList', data.map(d => d['印象深刻觀念']));
+            fillStickyNotes('suggestionList', data.map(d => d['總結與建議']));
+        }
+
+        // --- 統計與繪圖函式 ---
+        function countByField(data, fieldName) {
+            const counts = {};
+            data.forEach(row => {
+                let val = safeStr(row[fieldName]).trim() || '未填寫';
+                val = val.split('(')[0].trim();
+                val = translateLabel(val); 
+                val = translateLabel(val); 
+                counts[val] = (counts[val] || 0) + 1;
+            });
+            return counts;
+        }
+
+        function countMultiSelect(data, fieldName) {
+            const counts = {};
+            data.forEach(row => {
+                const val = safeStr(row[fieldName]);
+                if (val) {
+                    const items = val.split(', ');
+                    items.forEach(item => {
+                        let rawLabel = item.split(/[:(]/)[0].trim();
+                        let translatedLabel = translateLabel(rawLabel);
+                        if(translatedLabel) counts[translatedLabel] = (counts[translatedLabel] || 0) + 1;
+                    });
+                }
+            });
+            return counts;
+        }
+
+        function drawAgeChart(data) {
+            const counts = countByField(data, '年齡區間');
+            const ctx = document.getElementById('ageChart').getContext('2d');
+            const maxKey = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, '無');
+            document.getElementById('ageInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong>目前學員以 <span class="font-bold text-orange-600">${maxKey}</span> 族群為主。`;
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        data: Object.values(counts),
+                        backgroundColor: ['#FDBA74', '#FB923C', '#F97316', '#EA580C', '#9A3412', '#7C2D12']
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+        }
+
+        function drawSafetyChart(data) {
+            const counts = countByField(data, '心理安全感受');
+            const maxKey = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, '正面');
+            document.getElementById('safetyInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong>關於心理安全，多數人感受 <span class="font-bold text-pink-600">${maxKey}</span>。`;
+
+            const ctx = document.getElementById('safetyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        label: '人數',
+                        data: Object.values(counts),
+                        backgroundColor: '#F472B6',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function drawRiskChart(data) {
+            const counts = countMultiSelect(data, '遇到的風險');
+            const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            const labels = sorted.map(i => i[0]);
+            const values = sorted.map(i => i[1]);
+            const topRisk = labels.length > 0 ? labels[0] : "無數據";
+            document.getElementById('riskInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong>最擔心的狀況是 <span class="font-bold text-red-600">${topRisk}</span>。`;
+
+            const ctx = document.getElementById('riskChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '勾選人次',
+                        data: values,
+                        backgroundColor: '#F87171',
+                        borderRadius: 6
+                    }]
+                },
+                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function drawSkillChart(data) {
+            const stations = ['病史詢問收穫', '身體檢查收穫', '病情解釋收穫'];
+            const stats = { '病史詢問': [0,0,0], '身體檢查': [0,0,0], '病情解釋': [0,0,0] };
+
+            data.forEach(d => {
+                stations.forEach(station => {
+                    const val = safeStr(d[station]);
+                    let index = 1; 
+                    if (val.includes('完全') || val.includes('學會') || val.includes('知道') || val.includes('clear')) index = 0; 
+                    else if (val.includes('確定') || val.includes('時機') || val.includes('困難') || val.includes('blur')) index = 2; 
+                    const shortName = station.replace('收穫', '');
+                    stats[shortName][index]++;
+                });
+            });
+
+            document.getElementById('skillInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong>綠色代表高度掌握。若有較多紅色，建議加強該站點教學。`;
+
+            const ctx = document.getElementById('skillChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['病史詢問', '身體檢查', '病情解釋'],
+                    datasets: [
+                        { label: '高度掌握', data: [stats['病史詢問'][0], stats['身體檢查'][0], stats['病情解釋'][0]], backgroundColor: '#34D399' },
+                        { label: '普通/尚可', data: [stats['病史詢問'][1], stats['身體檢查'][1], stats['病情解釋'][1]], backgroundColor: '#FBBF24' },
+                        { label: '感到困難', data: [stats['病史詢問'][2], stats['身體檢查'][2], stats['病情解釋'][2]], backgroundColor: '#F87171' }
+                    ]
+                },
+                options: { maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+            });
+        }
+
+        function drawFutureChart(data) {
+            const counts = countMultiSelect(data, '未來想學');
+            const ctx = document.getElementById('futureChart').getContext('2d');
+            const maxKey = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, '無');
+            document.getElementById('futureInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong><span class="font-bold text-purple-600">${maxKey}</span> 需求最高。`;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        label: '票數',
+                        data: Object.values(counts),
+                        backgroundColor: '#A78BFA',
+                        borderRadius: 6
+                    }]
+                },
+                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function fillStickyNotes(elementId, textArray) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            
+            const validTexts = textArray.filter(t => safeStr(t).trim().length > 1);
+            
+            if (validTexts.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-10">📭 目前還沒有文字回饋</div>';
+                return;
+            }
+
+            validTexts.forEach(text => {
+                const note = document.createElement('div');
+                note.className = 'sticky-note';
+                note.innerText = safeStr(text);
+                container.appendChild(note);
+            });
+        }
+    </script>
+</body>
+</html>
