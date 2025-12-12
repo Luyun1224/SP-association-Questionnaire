@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <!-- 關鍵：強制網頁寬度符合裝置寬度，並允許使用者縮放 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>國考標準化病人訓練工作坊 - 課後回饋</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 基礎設定：防止手機橫放時字體大小忽大忽小 */
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "Heiti TC", "PingFang TC", sans-serif;
+            background-color: #FFF8F0;
+            color: #2D3748; /* 改用更深的顏色 */
+            line-height: 1.6; /* 增加行距，避免字太擠 */
+        }
+        
+        .section-title {
+            background-color: #FBD38D;
+            color: #744210;
+            padding: 16px 20px; /* 加大標題填充 */
+            border-radius: 12px 12px 0 0;
+            font-size: 1.35rem; /* 加大標題字體 */
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-card {
+            background-color: white;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            padding: 24px; /* 寬鬆的內距 */
+            border-bottom: 6px solid #ED8936; /* 加粗底部線條 */
+            transition: all 0.3s; /* 平滑過渡效果 */
+        }
+
+        /* 錯誤狀態的卡片樣式 */
+        .question-card.error-highlight {
+            border: 4px solid #F56565; /* 紅色邊框 */
+            box-shadow: 0 0 15px rgba(245, 101, 101, 0.5); /* 紅色光暈 */
+            background-color: #FFF5F5; /* 淡淡的粉紅色背景 */
+        }
+
+        /* 選項按鈕優化：大尺寸、彈性高度 */
+        .option-label {
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #FAFAFA;
+            border: 2px solid #E2E8F0;
+            min-height: 64px; /* 設定最小高度，好點擊 */
+            display: flex;
+            align-items: center; /* 垂直置中 */
+            margin-bottom: 12px; /* 選項之間的距離 */
+        }
+        
+        .option-label:hover {
+            background-color: #FEEBC8;
+            border-color: #FBD38D;
+        }
+        
+        /* 選中狀態：高對比色 */
+        input[type="radio"]:checked + span, 
+        input[type="checkbox"]:checked + span {
+            background-color: #DD6B20; /* 深橘色，對比度更高 */
+            color: white;
+            border-color: #DD6B20;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(221, 107, 32, 0.4);
+        }
+
+        /* 選項文字容器：允許換行 */
+        .text-option-span {
+            width: 100%;
+            padding: 16px;
+            border-radius: 6px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            /* 關鍵：讓文字太長時可以自動換行，不會跑版 */
+            white-space: normal; 
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        /* 輸入框優化 */
+        textarea, input[type="text"] {
+            font-size: 1.125rem; /* 18px */
+            line-height: 1.6;
+            resize: vertical; /* 允許垂直拉伸 */
+        }
+
+        /* 載入中遮罩 */
+        #loadingOverlay {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased text-lg"> <!-- 全站預設大字體 text-lg -->
+
+    <!-- 頂部橫幅 -->
+    <header class="bg-orange-100 py-8 px-4 text-center border-b-4 border-orange-300 relative overflow-hidden">
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <h1 class="text-3xl md:text-5xl font-bold text-orange-900 mb-3 tracking-wide leading-tight">國考標準化病人<br>訓練工作坊</h1>
+            <p class="text-xl md:text-2xl text-orange-800 font-bold bg-white/60 inline-block px-6 py-3 rounded-full mt-2">課後心得回饋</p>
+            <p class="text-lg text-gray-700 mt-4 font-medium">您的回饋，是我們進步最大的動力 ❤️</p>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-6">
+        
+        <form id="feedbackForm" onsubmit="submitForm(event)">
+            
+            <!-- 第一部分：基本資料 -->
+            <div class="mb-8">
+                <div class="section-title">
+                    <span class="mr-3 text-2xl">👤</span> 第一部分：基本資料
+                </div>
+                <div class="question-card" data-required="true" data-label="第1題 (年齡區間)">
+                    <div>
+                        <p class="text-xl font-bold mb-5 text-gray-900 leading-snug">1. 請問您的年齡區間？ <span class="text-red-500">*</span></p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="age" value="40歲以下" class="hidden">
+                                <span class="text-option-span text-lg justify-center">40 歲以下</span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="age" value="41-50歲" class="hidden">
+                                <span class="text-option-span text-lg justify-center">41 ~ 50 歲</span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="age" value="51-60歲" class="hidden">
+                                <span class="text-option-span text-lg justify-center">51 ~ 60 歲</span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="age" value="61-70歲" class="hidden">
+                                <span class="text-option-span text-lg justify-center">61 ~ 70 歲</span>
+                            </label>
+                            <label class="option-label rounded-xl md:col-span-2">
+                                <input type="radio" name="age" value="71歲以上" class="hidden">
+                                <span class="text-option-span text-lg justify-center">71 歲以上</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二部分：心理感受 -->
+            <div class="mb-8">
+                <div class="section-title">
+                    <span class="mr-3 text-2xl">❤️</span> 第二部分：心理安全與風險
+                </div>
+                <div class="question-card" data-required="true" data-label="第2題 (心理安全感受)">
+                    <div class="bg-yellow-50 p-4 rounded-xl border-l-8 border-yellow-400 mb-6">
+                        <p class="text-base md:text-lg text-gray-700 font-medium">
+                            關於「標準化病人的心理安全」課程 (13:00-13:50)
+                        </p>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="mb-10 border-b-2 border-gray-100 pb-8">
+                        <p class="text-xl font-bold mb-4 text-gray-900">2. 聽完關於「心理安全」的講解，您當下的感覺是？ <span class="text-red-500">*</span></p>
+                        <div class="flex flex-col gap-1">
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="q2_feeling" value="覺得溫暖(被保護)" class="hidden">
+                                <span class="text-option-span text-lg">🥰 覺得很溫暖，原來我們是被保護的</span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="q2_feeling" value="很有收穫(調適心情)" class="hidden">
+                                <span class="text-option-span text-lg">💡 很有收穫，學到了如何調適心情</span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="q2_feeling" value="感覺普通" class="hidden">
+                                <span class="text-option-span text-lg">🤔 感覺普通，跟以前聽得差不多</span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="q2_feeling" value="有點抽象(不太懂)" class="hidden">
+                                <span class="text-option-span text-lg">😵 有點抽象，不太懂具體要怎麼做</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q3 (複選) -->
+                    <div class="mb-10 border-b-2 border-gray-100 pb-8 question-group" data-type="checkbox" data-name="q3_risks[]" data-label="第3題 (遇到的風險)">
+                        <p class="text-xl font-bold mb-4 text-gray-900">
+                            3. (複選) 課程中提到了許多 SP 可能遇到的風險。請問下列哪些狀況是您 <span class="text-orange-600 underline">曾經遇過</span> 或 <span class="text-orange-600 underline">最擔心</span> 的？ <span class="text-red-500">*</span>
+                        </p>
+                        <div class="flex flex-col gap-1">
+                            <label class="option-label rounded-xl">
+                                <input type="checkbox" name="q3_risks[]" value="考生互動(粗魯/不適接觸)" class="hidden">
+                                <span class="text-option-span text-lg">
+                                    😰 <b>考生(學生)互動</b>：態度粗魯、語氣不好 (例如被吼)，或有不舒服的身體接觸
+                                </span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="checkbox" name="q3_risks[]" value="考官互動(改劇本/責備)" class="hidden">
+                                <span class="text-option-span text-lg">
+                                    😓 <b>考官(老師)互動</b>：臨時要求改劇本、責備演不好，或忽略我的不適
+                                </span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="checkbox" name="q3_risks[]" value="行政互動(排程滿/資訊不清)" class="hidden">
+                                <span class="text-option-span text-lg">
+                                    😖 <b>訓練/行政互動</b>：排程太滿沒休息(如間隔僅1分鐘)、劇本資訊不清楚
+                                </span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="checkbox" name="q3_risks[]" value="情緒影響(劇本強烈)" class="hidden">
+                                <span class="text-option-span text-lg">
+                                    🥺 <b>情緒影響</b>：劇本內容太過強烈(如家暴/癌症)，觸發我個人的傷心回憶
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="question-group" data-required="true" data-type="radio" data-name="q4_skills" data-label="第4題 (自我保護信心)">
+                        <p class="text-xl font-bold mb-4 text-gray-900">
+                            4. 了解上述風險後，對於課程中教導的 <span class="text-orange-600">自我保護技巧</span> (如：設立界線、喊暫停流程)，您現在覺得？ <span class="text-red-500">*</span>
+                        </p>
+                        <div class="flex flex-col gap-1">
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="q4_skills" value="很有信心" class="hidden">
+                                <span class="text-option-span text-lg">
+                                    💪 <b>很有信心</b>：未來遇到狀況，我敢開口保護自己！
+                                </span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="q4_skills" value="還在消化" class="hidden">
+                                <span class="text-option-span text-lg">
+                                    🤔 <b>還在消化</b>：我知道方法了，但當下可能還是會猶豫
+                                </span>
+                            </label>
+                            <label class="option-label rounded-xl">
+                                <input type="radio" name="q4_skills" value="有點擔心" class="hidden">
+                                <span class="text-option-span text-lg">
+                                    😟 <b>有點擔心</b>：還是不太敢反應，怕影響考試或被罵
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第三部分：實戰演練 -->
+            <div class="mb-8">
+                <div class="section-title">
+                    <span class="mr-3 text-2xl">💪</span> 第三部分：分站演練收穫
+                </div>
+                <div class="question-card" data-required="true" data-label="第三部分 (分站演練)">
+                    <div class="bg-yellow-50 p-4 rounded-xl border-l-8 border-yellow-400 mb-6">
+                        <p class="text-base md:text-lg text-gray-700 font-medium">
+                            關於下午的「分站演練」(病史、身體檢查、病情解釋)
+                        </p>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="mb-8 border-b-2 border-gray-100 pb-6 question-group" data-type="radio" data-name="q5_history" data-label="第5題 (病史詢問收穫)">
+                        <p class="text-xl font-bold mb-3 text-gray-900">5. 在【病史詢問】站，關於如何回答考生的問題： <span class="text-red-500">*</span></p>
+                        <div class="flex flex-col gap-1">
+                            <label class="option-label rounded-lg">
+                                <input type="radio" name="q5_history" value="完全掌握" class="hidden">
+                                <span class="text-option-span text-lg">✅ 我完全掌握了回答的技巧與節奏</span>
+                            </label>
+                            <label class="option-label rounded-lg">
+                                <input type="radio" name="q5_history" value="大概懂了" class="hidden">
+                                <span class="text-option-span text-lg">🤔 大概懂了，但還需要多練習</span>
+                            </label>
+                            <label class="option-label rounded-lg">
+                                <input type="radio" name="q5_history" value="不太確定" class="hidden">
+                                <span class="text-option-span text-lg">❌ 還是不太確定該講多少</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="mb-8 border-b-2 border-gray-100 pb-6 question-group" data-type="radio" data-name="q6_pe" data-label="第6題 (身體檢查收穫)">
+                        <p class="text-xl font-bold mb-3 text-gray-900">6. 在【身體檢查】站，關於配合演出的部分(如疼痛)： <span class="text-red-500">*</span></p>
+                        <div class="flex flex-col gap-1">
+                            <label class="option-label rounded-lg">
+                                <input type="radio" name="q6_pe" value="學會表現反應" class="hidden">
+                                <span class="text-option-span text-lg">✅ 我學會了如何自然地表現身體反應</span>
+                            </label>
+                            <label class="option-label rounded-lg">
+                                <input type="radio" name="q6_pe" value="演起來卡卡" class="hidden">
+                                <span class="text-option-span text-lg">🤔 知道怎麼做，但演起來有點卡卡的</span>
+                            </label>
+                            <label class="option-label rounded-lg">
+                                <input type="radio" name="q6_pe" value="抓不到時機" class="hidden">
+                                <span class="text-option-span text-lg">❌ 還是抓不到反應的時機點</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q7 -->
+                    <div class="mb-8 border-b-2 border-gray-100 pb-6 question-group" data-type="radio" data-name="q7_explain" data-label="第7題 (病情解釋收穫)">
+                        <p class="text-xl font-bold mb-3 text-gray-900">7. 在【病情解釋】站，關於與考生的互動： <span class="text-red-500">*</span></p>
+                        <div class="flex flex-col gap-1">
+                            <label class="option-label rounded-lg">
+                                <input type="radio" name="q7_explain" value="知道如何互動" class="hidden">
+                                <span class="text-option-span text-lg">✅ 我知道該如何與考生進行對話互動了</span>
+                            </label>
+                            <label class="option-label rounded-lg">
+                                <input type="radio" name="q7_explain" value="還可以" class="hidden">
+                                <span class="text-option-span text-lg">🤔 還可以，但有時候會不知道要接什麼話</span>
+                            </label>
+                            <label class="option-label rounded-lg">
+                                <input type="radio" name="q7_explain" value="覺得困難" class="hidden">
+                                <span class="text-option-span text-lg">❌ 覺得很困難，不知道重點在哪裡</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q8 信心 -->
+                    <div class="bg-orange-50 p-5 rounded-xl border-2 border-orange-200 question-group" data-type="radio" data-name="q8_confidence" data-label="第8題 (未來信心)">
+                        <p class="text-xl font-bold mb-4 text-orange-900">8. 整體來說，對於未來參加國考擔任 SP： <span class="text-red-500">*</span></p>
+                        <div class="flex flex-col gap-2">
+                            <label class="option-label rounded-lg bg-white border-orange-200">
+                                <input type="radio" name="q8_confidence" value="信心滿滿" class="hidden">
+                                <span class="text-option-span text-xl font-bold text-orange-700">💪 我現在信心滿滿！</span>
+                            </label>
+                            <label class="option-label rounded-lg bg-white border-orange-200">
+                                <input type="radio" name="q8_confidence" value="更有把握" class="hidden">
+                                <span class="text-option-span text-lg">🙂 比來之前更有把握了一些</span>
+                            </label>
+                            <label class="option-label rounded-lg bg-white border-orange-200">
+                                <input type="radio" name="q8_confidence" value="緊張/沒信心" class="hidden">
+                                <span class="text-option-span text-lg">😟 還是覺得很緊張/沒信心</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第四部分：心得與回饋 -->
+            <div class="mb-8">
+                <div class="section-title">
+                    <span class="mr-3 text-2xl">📝</span> 第四部分：需求調查與回饋
+                </div>
+                <div class="question-card" data-required="true" data-label="第四部分 (行政與回饋)">
+                    
+                    <!-- Q9 行政 -->
+                    <div class="mb-10 border-b-2 border-gray-100 pb-8 question-group" data-type="radio" data-name="q9_admin" data-label="第9題 (行政安排感受)">
+                        <p class="text-xl font-bold mb-4 text-gray-900">9. 關於今天的場地、動線與時間安排，您的感受是？ <span class="text-red-500">*</span></p>
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <label class="option-label flex-1 rounded-lg">
+                                <input type="radio" name="q9_admin" value="舒適順暢" class="hidden">
+                                <span class="text-option-span text-lg justify-center">😊 很舒適順暢</span>
+                            </label>
+                            <label class="option-label flex-1 rounded-lg">
+                                <input type="radio" name="q9_admin" value="普通" class="hidden">
+                                <span class="text-option-span text-lg justify-center">😐 普通/還可以</span>
+                            </label>
+                            <label class="option-label flex-1 rounded-lg">
+                                <input type="radio" name="q9_admin" value="有些混亂" class="hidden">
+                                <span class="text-option-span text-lg justify-center">😖 覺得有些混亂</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q10 未來需求 -->
+                    <div class="mb-10 border-b-2 border-gray-100 pb-8 question-group" data-type="checkbox" data-name="q10_future[]" data-label="第10題 (未來想學內容)">
+                        <p class="text-xl font-bold mb-4 text-gray-900">10. (複選) 下次如果有進階課程，您最想學什麼？ <span class="text-red-500">*</span></p>
+                        <div class="flex flex-col gap-1">
+                            <label class="option-label rounded-lg">
+                                <input type="checkbox" name="q10_future[]" value="表演技巧" class="hidden">
+                                <span class="text-option-span text-lg">🎭 表演技巧 (聲音、表情、情緒)</span>
+                            </label>
+                            <label class="option-label rounded-lg">
+                                <input type="checkbox" name="q10_future[]" value="醫學知識" class="hidden">
+                                <span class="text-option-span text-lg">🩺 醫學知識 (常見疾病症狀)</span>
+                            </label>
+                            <label class="option-label rounded-lg">
+                                <input type="checkbox" name="q10_future[]" value="回饋技巧" class="hidden">
+                                <span class="text-option-span text-lg">🗣️ 回饋技巧 (如何給學生評語)</span>
+                            </label>
+                            <label class="option-label rounded-lg">
+                                <input type="checkbox" name="q10_future[]" value="特殊化妝" class="hidden">
+                                <span class="text-option-span text-lg">💄 特殊化妝 (傷口、瘀青)</span>
+                            </label>
+                            
+                            <!-- 其他選項 -->
+                            <div class="bg-gray-50 rounded-lg border-2 border-gray-200 transition hover:border-orange-300">
+                                <label class="flex items-center p-4 cursor-pointer">
+                                    <input type="checkbox" name="q10_future[]" value="其他" class="hidden" onchange="toggleOtherInput(this)">
+                                    <span class="text-option-span text-lg flex-1 font-bold text-orange-700">✨ 其他 (我自己填寫)</span>
+                                </label>
+                                <div id="otherInputContainer" class="hidden px-4 pb-4">
+                                    <textarea name="q10_future_other" rows="2" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white" placeholder="請告訴我們您想學什麼..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Q11 學習亮點 -->
+                    <div class="mb-10 border-b-2 border-gray-100 pb-8">
+                        <p class="text-xl font-bold mb-4 text-gray-900">11. 今天課程中，哪一個觀念或技巧讓您「印象最深刻」？</p>
+                        <textarea name="q11_insight" rows="4" class="w-full p-4 border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-200 transition" placeholder="例如：原來表演疼痛不需要大叫，而是..."></textarea>
+                    </div>
+
+                    <!-- Q12 挑戰與總結 -->
+                    <div>
+                        <p class="text-xl font-bold mb-4 text-gray-900">12. 最後，有什麼話想對我們說嗎？(包含覺得困難的地方，或是給講師的鼓勵)</p>
+                        <textarea name="q12_suggestion" rows="5" class="w-full p-4 border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-200 transition" placeholder="請放心告訴我們..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 送出按鈕 -->
+            <div class="text-center mb-16 px-4">
+                <button id="submitBtn" type="submit" class="w-full md:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-2xl font-bold py-6 px-16 rounded-full shadow-xl transform transition hover:scale-105 active:scale-95 border-4 border-white ring-4 ring-orange-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                    填寫完畢，送出！
+                </button>
+            </div>
+
+        </form>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 py-8 text-center text-base px-4">
+        <p class="mb-2 font-bold tracking-wider">2025｜台灣標準化病人協會</p>
+        <p>奇美醫療財團法人奇美醫院臨床技能中心</p>
+    </footer>
+
+    <!-- 錯誤提示彈窗 -->
+    <div id="validationModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm p-4">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm text-center shadow-2xl border-4 border-red-300">
+            <div class="text-5xl mb-4">🔔</div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">哎呀，還沒填完喔！</h3>
+            <p id="validationMsg" class="text-lg text-gray-600 mb-6">請檢查標示紅色的題目。</p>
+            <button onclick="closeValidationModal()" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-xl text-lg shadow-lg transition">
+                好的，我去填寫
+            </button>
+        </div>
+    </div>
+
+    <!-- 載入中畫面 -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="text-white text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4"></div>
+            <p class="text-2xl font-bold">資料傳送中，請稍候...</p>
+        </div>
+    </div>
+
+    <!-- 成功視窗 -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm p-4">
+        <div class="bg-white p-8 md:p-10 rounded-3xl w-full max-w-md text-center shadow-2xl border-8 border-orange-100">
+            <div class="text-7xl mb-6 animate-bounce">🎉</div>
+            <h3 class="text-3xl font-bold text-orange-900 mb-3">謝謝您！</h3>
+            <p class="text-xl text-gray-700 mb-8 font-medium leading-relaxed">您的意見我們都收到了。<br>辛苦了，回家路上請小心！</p>
+            <button onclick="closeModal()" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-8 rounded-xl text-xl shadow-lg transition">
+                關閉視窗
+            </button>
+        </div>
+    </div>
+
+    <!-- 錯誤視窗 -->
+    <div id="errorModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm p-4">
+        <div class="bg-white p-8 md:p-10 rounded-3xl w-full max-w-md text-center shadow-2xl border-8 border-red-100">
+            <div class="text-7xl mb-6">😭</div>
+            <h3 class="text-3xl font-bold text-red-900 mb-3">傳送失敗</h3>
+            <p class="text-xl text-gray-700 mb-8 font-medium leading-relaxed">不好意思，系統好像有點問題。<br>請檢查您的網路，或稍後再試。</p>
+            <button onclick="closeErrorModal()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-4 px-8 rounded-xl text-xl shadow-lg transition">
+                關閉視窗
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 設定 Apps Script 網址 (請使用者自行填入)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJmJau-yuYnO3EvfmgCiEFiPVpn02YKhoce20aKJVXS39K9454m9gun4U6nmz1nVgu/exec'; 
+
+        // 控制「其他」選項的輸入框顯示/隱藏
+        function toggleOtherInput(checkbox) {
+            const container = document.getElementById('otherInputContainer');
+            const textarea = container.querySelector('textarea');
+            
+            if (checkbox.checked) {
+                container.classList.remove('hidden');
+                setTimeout(() => textarea.focus(), 100);
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        // 驗證表單
+        function validateForm() {
+            // 定義所有必填的選擇題
+            const requiredFields = [
+                { name: 'age', label: '第1題 (年齡區間)' },
+                { name: 'q2_feeling', label: '第2題 (心理安全感受)' },
+                { name: 'q3_risks[]', label: '第3題 (遇到的風險)', type: 'checkbox' },
+                { name: 'q4_skills', label: '第4題 (自我保護信心)' },
+                { name: 'q5_history', label: '第5題 (病史詢問收穫)' },
+                { name: 'q6_pe', label: '第6題 (身體檢查收穫)' },
+                { name: 'q7_explain', label: '第7題 (病情解釋收穫)' },
+                { name: 'q8_confidence', label: '第8題 (未來信心)' },
+                { name: 'q9_admin', label: '第9題 (行政安排感受)' },
+                { name: 'q10_future[]', label: '第10題 (未來想學)', type: 'checkbox' }
+            ];
+
+            let firstErrorElement = null;
+            let errorLabel = "";
+
+            // 清除之前的錯誤標記
+            document.querySelectorAll('.question-card').forEach(el => {
+                el.classList.remove('error-highlight');
+            });
+
+            // 檢查每一題
+            for (const field of requiredFields) {
+                let isFilled = false;
+                const inputs = document.getElementsByName(field.name);
+                
+                for (let i = 0; i < inputs.length; i++) {
+                    if (inputs[i].checked) {
+                        isFilled = true;
+                        break;
+                    }
+                }
+
+                if (!isFilled) {
+                    // 找到該題目的容器 (往上找 question-card 或 question-group)
+                    let container = inputs[0].closest('.question-group') || inputs[0].closest('.question-card');
+                    
+                    if (container) {
+                        // 如果是 group, 往上找 card 標記
+                         const card = inputs[0].closest('.question-card');
+                         if(card) card.classList.add('error-highlight');
+                    }
+
+                    if (!firstErrorElement) {
+                        firstErrorElement = inputs[0].closest('.question-card');
+                        errorLabel = field.label;
+                    }
+                }
+            }
+
+            if (firstErrorElement) {
+                // 顯示錯誤訊息
+                document.getElementById('validationMsg').innerText = `您忘記填寫 ${errorLabel} 囉！`;
+                document.getElementById('validationModal').classList.remove('hidden');
+                
+                // 儲存錯誤元素以便捲動
+                window.targetErrorElement = firstErrorElement;
+                return false;
+            }
+
+            return true;
+        }
+
+        function closeValidationModal() {
+            document.getElementById('validationModal').classList.add('hidden');
+            // 平滑捲動到第一個錯誤題目
+            if (window.targetErrorElement) {
+                window.targetErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // 提交表單功能
+        function submitForm(event) {
+            event.preventDefault();
+
+            // 1. 執行驗證
+            if (!validateForm()) {
+                return; // 如果驗證失敗，停止送出
+            }
+
+            // 檢查是否已填入網址
+            if (SCRIPT_URL === '您的_APPS_SCRIPT_網址_請貼在這裡' || SCRIPT_URL === '') {
+                alert('請先在程式碼中設定 Google Apps Script 網址！');
+                return;
+            }
+
+            // 顯示載入中
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const submitBtn = document.getElementById('submitBtn');
+            loadingOverlay.style.display = 'flex';
+            submitBtn.disabled = true;
+
+            const form = document.getElementById('feedbackForm');
+            const formData = new FormData(form);
+
+            // 使用 fetch API 傳送資料
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors' // 關鍵：解決跨域問題
+            })
+            .then(() => {
+                // 成功
+                loadingOverlay.style.display = 'none';
+                submitBtn.disabled = false;
+                const modal = document.getElementById('successModal');
+                modal.classList.remove('hidden');
+            })
+            .catch(error => {
+                // 失敗
+                console.error('Error:', error);
+                loadingOverlay.style.display = 'none';
+                submitBtn.disabled = false;
+                const errorModal = document.getElementById('errorModal');
+                errorModal.classList.remove('hidden');
+            });
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('successModal');
+            modal.classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('feedbackForm').reset();
+            // 清除錯誤標記
+             document.querySelectorAll('.question-card').forEach(el => {
+                el.classList.remove('error-highlight');
+            });
+        }
+
+        function closeErrorModal() {
+            const modal = document.getElementById('errorModal');
+            modal.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
