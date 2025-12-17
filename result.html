@@ -570,38 +570,40 @@
             const topFutureName = topFutureEntry[0];
             const weakestSkillName = weakestSkillEntry[0];
 
+            // 1. 風險分析 (Risk) - 修正後版本，基於問卷選項文字
             let riskInsight = "數據顯示多數困擾來自考試當下的互動壓力。";
             let riskAdvice = "建議持續關注學員的回饋。";
             
             if (topRiskName.includes("考生")) {
-                riskInsight = "🔍 <strong>數據洞察：</strong>SP 對於「身體自主權」與「被尊重」的感受最為敏感，顯示部分學生在緊張時忽略了專業態度。";
-                riskAdvice = "💡 <strong>應對策略：</strong>加強考前對醫學生的「專業態度」宣導，並教導 SP 如何在當下溫和地設立界線。";
+                riskInsight = "🔍 <strong>數據洞察：</strong>學員勾選率最高的是「態度粗魯、語氣不好或不適接觸」，顯示SP最在意的風險來自於考生的直接互動與禮儀。";
+                riskAdvice = "💡 <strong>應對策略：</strong>建議在考前說明會加強對醫學生的「職場專業與禮儀」教育，並教導SP如何在感到不適時使用標準化的暫停手勢自我保護。";
             } else if (topRiskName.includes("考官")) {
-                riskInsight = "🔍 <strong>數據洞察：</strong>數據反映出「權力不對等」的焦慮，SP 擔心因表現不符考官預期而遭到當眾指責。";
-                riskAdvice = "💡 <strong>應對策略：</strong>舉辦「考官共識營」，強調對 SP 的尊重與友善回饋文化，避免公開責備。";
+                riskInsight = "🔍 <strong>數據洞察：</strong>多數SP勾選了「臨時要求改劇本」或「責備演不好」，這反映出SP對於考試標準不一致或負面評價的擔憂，進而影響演出信心。";
+                riskAdvice = "💡 <strong>應對策略：</strong>建議舉辦考官共識營，統一評分與劇本標準，並建立友善的「建設性回饋」文化，取代責備。";
             } else if (topRiskName.includes("行政")) {
-                riskInsight = "🔍 <strong>數據洞察：</strong>特定「高強度場次」的疲勞累積已成為潛在風險。";
-                riskAdvice = "💡 <strong>應對策略：</strong>檢視排班表，確保 SP 每場次間有足夠的「下戲」與休息緩衝時間。";
+                riskInsight = "🔍 <strong>數據洞察：</strong>學員主要反映「排程太滿沒休息」或「資訊不清楚」，顯示高強度的連續場次已造成體力負擔。";
+                riskAdvice = "💡 <strong>應對策略：</strong>建議檢視排班表，確保每位SP在連續場次間有足夠的緩衝休息時間，並提前確認劇本資訊傳達無誤。";
             } else if (topRiskName.includes("情緒")) {
-                riskInsight = "🔍 <strong>數據洞察：</strong>劇本的情緒張力已產生「外溢效應」，SP 在下戲後仍難以抽離角色情緒。";
-                riskAdvice = "💡 <strong>應對策略：</strong>在劇本設計時標註情緒風險，並建立「下戲儀式」或心理支持小組。";
+                riskInsight = "🔍 <strong>數據洞察：</strong>學員反映「劇本內容太過強烈」，顯示高張力的角色設定（如家暴、重症）可能觸發了個人的情緒反應。";
+                riskAdvice = "💡 <strong>應對策略：</strong>建議在選角時標註情緒風險，並在考後安排強制性的「出戲儀式」(De-roling) 或心理支持小組分享。";
             }
 
+            // 2. 許願池 (Future) - 基於選項與學習動機推論
             let futureInsight = "學員展現高度學習熱忱，需求集中在提升專業能力。";
             let futureAdvice = "可依照此需求規劃下一季的進修課程。";
             
             if (topFutureName.includes("表演")) {
-                futureInsight = "🔍 <strong>數據洞察：</strong>SP 渴望從「模仿」進階到「內化」，希望透過肢體與聲音的細節，提升演出的真實感。";
-                futureAdvice = "🚀 <strong>下季規劃：</strong>邀請專業劇團老師，開設「肢體語言」與「聲音表情」的進階工作坊。";
+                futureInsight = "🔍 <strong>數據洞察：</strong>多數SP希望精進「聲音、表情、情緒」的表演層次，顯示大家不滿足於照本宣科，而是希望能演得更自然、真實。";
+                futureAdvice = "🚀 <strong>下季規劃：</strong>邀請專業劇團老師或資深SP，開設「肢體語言」與「聲音表情」的進階工作坊，透過錄影回放進行微調。";
             } else if (topFutureName.includes("醫學")) {
-                futureInsight = "🔍 <strong>數據洞察：</strong>學員擔心因「醫學知識不足」而給出錯誤反應，反映出其對角色準確度的高度責任感。";
-                futureAdvice = "🚀 <strong>下季規劃：</strong>針對國考常見教案（如腹痛、胸痛），開設「疾病機轉大補帖」講座。";
+                futureInsight = "🔍 <strong>數據洞察：</strong>SP勾選此項顯示其責任感，擔心因不了解「常見疾病症狀」而給出錯誤的生理反應，希望能提升醫學知識以輔助演出。";
+                futureAdvice = "🚀 <strong>下季規劃：</strong>針對國考常見教案（如腹痛、胸痛），由醫師開設「疾病機轉大補帖」講座，解析症狀與生理反應的關聯。";
             } else if (topFutureName.includes("回饋")) {
-                futureInsight = "🔍 <strong>數據洞察：</strong>SP 在「給予評語」時感到最沒自信，擔心詞不達意或傷害學生自尊。";
-                futureAdvice = "🚀 <strong>下季規劃：</strong>安排「模擬回饋」演練（Role-play），讓 SP 練習如何給予學生具體且建設性的評語。";
+                futureInsight = "🔍 <strong>數據洞察：</strong>「如何給學生評語」是SP普遍的痛點，數據反映出SP擔心詞不達意或無法精準指出學生問題，希望能更有系統地給予回饋。";
+                futureAdvice = "🚀 <strong>下季規劃：</strong>安排「模擬回饋」演練（Role-play），提供具體的回饋句型與架構（如三明治法），讓SP練習如何給予建設性評語。";
             } else if (topFutureName.includes("化妝")) {
-                futureInsight = "🔍 <strong>數據洞察：</strong>視覺真實度是建立 SP 自信的快速途徑，且此類課程互動性高，受歡迎程度高。";
-                futureAdvice = "🚀 <strong>下季規劃：</strong>採購簡易傷妝教材，開設傷口與瘀青化妝實作課程。";
+                futureInsight = "🔍 <strong>數據洞察：</strong>「特殊化妝」能直接提升演出的視覺說服力，且具備高度趣味性，是提升SP參與動機的熱門選項。";
+                futureAdvice = "🚀 <strong>下季規劃：</strong>採購簡易傷妝教材（如人造血、皮膚蠟），開設傷口與瘀青化妝實作課程，讓SP能動手體驗。";
             }
 
             const safeCount = data.filter(d => safeStr(d['心理安全感受']).includes('溫暖') || safeStr(d['心理安全感受']).includes('收穫')).length;
@@ -611,25 +613,25 @@
             let sentimentAdvice = "❤️ <strong>團隊價值：</strong>建議保留為常設單元，持續鞏固歸屬感。";
 
             if (safeRate >= 80) {
-                sentimentInsight = "🔍 <strong>數據洞察：</strong>高達八成以上的正向回饋，證實「心理安全」是留住資深 SP 的關鍵黏著劑。";
-                sentimentAdvice = "❤️ <strong>團隊價值：</strong>此課程已成為團隊文化核心，建議將「安全感建立」列為新進人員必修。";
+                sentimentInsight = "🔍 <strong>數據洞察：</strong>超過八成的學員給予正面回饋（感到溫暖或有收穫），證實本次工作坊強調的「心理安全」成功建立了學員對團隊的信任感與歸屬感。";
+                sentimentAdvice = "❤️ <strong>團隊價值：</strong>此課程已成為穩定軍心的關鍵，建議將「心理安全與界線」列為每次培訓的必修模組，持續強化。";
             } else if (safeRate < 60) {
-                sentimentInsight = "🔍 <strong>數據洞察：</strong>部分學員仍感到困惑，顯示「理論講述」與「實際感受」之間仍有落差。";
-                sentimentAdvice = "⚠️ <strong>改進方向：</strong>建議將課程改為「小組分享」形式，增加互動與案例討論，減少距離感。";
+                sentimentInsight = "🔍 <strong>數據洞察：</strong>數據顯示仍有部分學員感到困惑或覺得抽象，這可能意味著課程內容較為理論，學員尚無法完全連結到實際情境。";
+                sentimentAdvice = "⚠️ <strong>改進方向：</strong>建議調整課程形式，增加「資深SP經驗分享」或「情境模擬討論」，讓心理安全的概念更具體、更落地。";
             }
 
             let skillInsight = "各站點表現平均，顯示基礎訓練扎實。";
             let skillAdvice = "建議維持目前的教學模式，並針對個案微調。";
 
             if (weakestSkillName === '身體檢查') {
-                skillInsight = "🔍 <strong>數據洞察：</strong>學員最大的痛點在於「反應的拿捏」，害怕演得太誇張被識破，又怕演太輕學生沒發現。";
-                skillAdvice = "🎯 <strong>教學重點：</strong>建議增加影片示範，讓學員模仿不同疼痛程度的標準反應 (Pain Scale)。";
+                skillInsight = "🔍 <strong>數據洞察：</strong>統計顯示「身體檢查」是學員感到最困難的環節，主要痛點在於「反應的拿捏」（如疼痛程度），擔心演太假或反應不及。";
+                skillAdvice = "🎯 <strong>教學重點：</strong>建議在未來的教案訓練中，增加影片示範不同疼痛等級（Pain Scale 1-10）的具體表現，讓學員有模仿的依據。";
             } else if (weakestSkillName === '病情解釋') {
-                skillInsight = "🔍 <strong>數據洞察：</strong>「對話互動」的不確定性最高，SP 擔心在學生解釋病情時，無法給出恰當的回應。";
-                skillAdvice = "🎯 <strong>教學重點：</strong>建議提供「常見問答集 (FAQ)」與「引導句型」，讓 SP 有劇本可依循，減少臨場焦慮。";
+                skillInsight = "🔍 <strong>數據洞察：</strong>學員在「病情解釋」站感到較多困難，主因是「對話互動」的不確定性高，不知道在學生解釋時該如何適當回應或提問。";
+                skillAdvice = "🎯 <strong>教學重點：</strong>建議整理該教案的「常見問答集 (FAQ)」與「引導句型」，讓SP有劇本可依循，減少臨場反應的焦慮。";
             } else if (weakestSkillName === '病史詢問') {
-                skillInsight = "🔍 <strong>數據洞察：</strong>學員主要擔心「多說多錯」，害怕無意間透露了不該說的關鍵線索。";
-                skillAdvice = "🎯 <strong>教學重點：</strong>建議整理該教案的「回答禁忌清單 (Do's & Don'ts)」，明確劃分資訊界線。";
+                skillInsight = "🔍 <strong>數據洞察：</strong>雖然是基礎站點，但學員仍反映困難，主要擔心「多說多錯」，害怕無意間透露了不該說的關鍵線索影響考試公平性。";
+                skillAdvice = "🎯 <strong>教學重點：</strong>建議在劇本中明確標示「回答禁忌清單 (Do's & Don'ts)」，並強調「被動回答」的原則，讓SP更安心。";
             }
 
             const container = document.getElementById('hotspotContainer');
