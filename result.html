@@ -90,7 +90,7 @@
 
         /* Hero 區塊背景 - 深色星空 */
         .hero-bg {
-            background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.85)), url('001.jpg'); 
+            background: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.6)), url('001.jpg'); 
             background-size: cover;
             background-position: center;
         }
@@ -352,6 +352,42 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="hotspotContainer">
                     <div class="col-span-2 text-center text-gray-400 py-8">
                         <i class="fa-solid fa-spinner fa-spin mr-2"></i> 正在分析回饋內容...
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 蘋果樹的回饋 ================= -->
+            <div class="space-y-6">
+                <div class="flex items-center space-x-2">
+                    <div class="w-1 h-6 bg-red-600 rounded-full"></div>
+                    <h2 class="text-xl font-bold text-gray-800">
+                        <i class="fa-solid fa-apple-whole text-red-500 mr-2"></i>我們共同灌溉的蘋果樹
+                    </h2>
+                </div>
+                
+                <div class="card bg-gradient-to-br from-red-50 to-pink-50 border-red-200">
+                    <p class="text-sm text-gray-600 italic mb-6">
+                        <i class="fa-solid fa-seedling text-green-500 mr-2"></i>每一顆蘋果，都承載著今天的感動與未來的期許。
+                    </p>
+                    
+                    <div class="relative group cursor-pointer">
+                        <img src="003.jpg" 
+                             alt="蘋果樹合照" 
+                             class="w-full rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300"
+                             onclick="openImageModal('003.jpg', '蘋果樹合照')">
+                        
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 rounded-xl flex items-center justify-center">
+                            <div class="opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-4">
+                                <button onclick="openImageModal('003.jpg', '蘋果樹合照')" 
+                                        class="bg-white/90 hover:bg-white text-gray-800 px-6 py-3 rounded-lg font-bold shadow-lg transform hover:scale-105 transition">
+                                    <i class="fa-solid fa-magnifying-glass-plus mr-2"></i>放大檢視
+                                </button>
+                                <a href="003.jpg" download="蘋果樹合照.jpg" 
+                                   class="bg-red-500/90 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-bold shadow-lg transform hover:scale-105 transition">
+                                    <i class="fa-solid fa-download mr-2"></i>下載照片
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -903,6 +939,64 @@
                 container.appendChild(note);
             });
         }
+
+        // 圖片放大Modal功能
+        function openImageModal(imageSrc, imageAlt) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const caption = document.getElementById('imageCaption');
+            
+            modal.classList.remove('hidden');
+            modalImg.src = imageSrc;
+            caption.textContent = imageAlt;
+            
+            // 添加淡入動畫
+            setTimeout(() => {
+                modal.querySelector('.modal-content-wrapper').classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            const contentWrapper = modal.querySelector('.modal-content-wrapper');
+            
+            // 添加淡出動畫
+            contentWrapper.classList.remove('scale-100', 'opacity-100');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // 點擊Modal背景關閉
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeImageModal();
+                    }
+                });
+            }
+        });
     </script>
+
+    <!-- 圖片放大Modal -->
+    <div id="imageModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="modal-content-wrapper transform scale-95 opacity-0 transition-all duration-300 ease-out max-w-6xl w-full">
+            <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <button onclick="closeImageModal()" 
+                        class="absolute top-4 right-4 z-10 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full shadow-lg transition transform hover:scale-110 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+                
+                <img id="modalImage" src="" alt="" class="w-full h-auto max-h-[85vh] object-contain">
+                
+                <div class="bg-gradient-to-t from-gray-900/90 to-transparent absolute bottom-0 left-0 right-0 p-6">
+                    <p id="imageCaption" class="text-white text-center text-lg font-bold"></p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
