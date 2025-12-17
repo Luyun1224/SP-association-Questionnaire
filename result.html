@@ -300,28 +300,10 @@
                 <div class="card flex flex-col h-full">
                     <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-gray-800">👥 學員年齡分佈</h3></div>
                     <div class="chart-container flex-grow"><canvas id="ageChart"></canvas></div>
-                    <div class="mt-4 bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
-                        <div class="flex items-start space-x-2">
-                            <i class="fa-solid fa-lightbulb text-orange-500 mt-1"></i>
-                            <div>
-                                <p class="text-xs font-bold text-orange-800 uppercase tracking-wide mb-1">數據洞察</p>
-                                <p class="text-sm text-gray-700" id="ageInsight">載入中...</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="card flex flex-col h-full">
                     <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-gray-800">❤️ 心理安全課程感受</h3></div>
                     <div class="chart-container flex-grow"><canvas id="safetyChart"></canvas></div>
-                    <div class="mt-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
-                        <div class="flex items-start space-x-2">
-                            <i class="fa-solid fa-chart-line text-red-500 mt-1"></i>
-                            <div>
-                                <p class="text-xs font-bold text-red-800 uppercase tracking-wide mb-1">數據洞察</p>
-                                <p class="text-sm text-gray-700" id="safetyInsight">載入中...</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -888,14 +870,6 @@
                 }, 
                 options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } } 
             });
-
-            // 生成年齡分佈洞察
-            const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-            const topAge = entries[0];
-            const total = Object.values(counts).reduce((sum, val) => sum + val, 0);
-            const percentage = ((topAge[1] / total) * 100).toFixed(0);
-            document.getElementById('ageInsight').textContent = 
-                `本次學員年齡分布以「${topAge[0]}」為主，共有 ${topAge[1]} 位學員（占 ${percentage}%），顯示此年齡層對標準化病人培訓具有高度參與意願。`;
         }
 
         function drawSafetyChart(data) {
@@ -916,16 +890,6 @@
                 }, 
                 options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } } 
             });
-
-            // 生成心理安全感受洞察
-            const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-            const topFeeling = entries[0];
-            const total = Object.values(counts).reduce((sum, val) => sum + val, 0);
-            const percentage = ((topFeeling[1] / total) * 100).toFixed(0);
-            const labelText = LABEL_MAP[topFeeling[0]] || topFeeling[0];
-            document.getElementById('safetyInsight').textContent = 
-                `心理安全課程獲得高度共鳴！${topFeeling[1]} 位學員表示「${labelText}」（占 ${percentage}%），反映課程在心理韌性建立方面成效卓越。`;
-        }
         }
 
         function drawRiskChart(data) {
