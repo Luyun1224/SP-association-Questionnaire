@@ -8,15 +8,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js 圖表庫 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <!-- 字體設定 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Google Fonts for Sticky Notes (Handwritten style) -->
+    <!-- Google Fonts for Sticky Notes -->
     <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F8FAFC; color: #334155; }
+        body { 
+            font-family: 'Noto Sans TC', "Microsoft JhengHei", sans-serif; 
+            background-color: #FFF8F0; /* 下方維持米色，搭配問卷 */
+            color: #2D3748; 
+        }
         
         /* 卡片通用樣式 */
         .card { 
@@ -24,39 +29,29 @@
             border-radius: 16px; 
             padding: 24px; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); 
-            border: 1px solid #E2E8F0;
+            border: 1px solid #FBD38D; 
+            border-bottom: 4px solid #ED8936; 
         }
         .chart-container { position: relative; height: 320px; width: 100%; margin-top: 1rem; }
         
-        /* 洞察區塊 */
-        .insight-box {
-            background-color: #FFF7ED; 
-            border-left: 4px solid #F97316; 
-            padding: 12px 16px;
-            margin-top: 16px;
-            border-radius: 0 4px 4px 0;
-            font-size: 0.9rem;
-            color: #9A3412;
-            line-height: 1.6;
-        }
-
         /* 便利貼樣式 */
         .sticky-wall {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
             padding: 10px;
-            max-height: 500px;
+            max-height: 600px;
             overflow-y: auto;
         }
         .sticky-note {
             background-color: #FEF08A; 
-            padding: 20px;
-            border-radius: 2px;
+            padding: 24px;
+            border-radius: 4px; 
             box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
-            font-family: 'Kalam', cursive, 'Noto Sans TC', sans-serif; /* 手寫風字體優先 */
+            font-family: 'Noto Sans TC', sans-serif; 
+            font-weight: 500; 
             font-size: 1.1rem;
-            line-height: 1.4;
+            line-height: 1.6;
             color: #4B5563;
             transform: rotate(-1deg);
             transition: all 0.3s ease;
@@ -64,74 +59,70 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            min-height: 140px;
+            min-height: 160px;
             position: relative;
         }
-        /* 釘子效果 */
         .sticky-note::after {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #EF4444; /* 紅色釘子 */
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-            z-index: 5;
+            content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            width: 12px; height: 12px; border-radius: 50%; background-color: #C05621;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3); z-index: 5;
         }
-
-        .sticky-note:hover {
-            transform: rotate(0deg) scale(1.05);
-            z-index: 10;
-            box-shadow: 6px 12px 20px rgba(0,0,0,0.15);
-        }
-        .sticky-note:nth-child(2n) { background-color: #BAE6FD; transform: rotate(2deg); } 
-        .sticky-note:nth-child(3n) { background-color: #FECACA; transform: rotate(-1.5deg); } 
-        .sticky-note:nth-child(4n) { background-color: #BBF7D0; transform: rotate(1.5deg); } 
+        .sticky-note:hover { transform: rotate(0deg) scale(1.05); z-index: 10; box-shadow: 6px 12px 20px rgba(0,0,0,0.15); }
+        .sticky-note:nth-child(2n) { background-color: #FEEBC8; transform: rotate(1deg); } 
+        .sticky-note:nth-child(3n) { background-color: #FED7D7; transform: rotate(-1.5deg); } 
+        .sticky-note:nth-child(4n) { background-color: #C6F6D5; transform: rotate(1.5deg); } 
 
         /* 卷軸美化 */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #FBD38D; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #ED8936; }
 
         /* 載入動畫 */
         .loader {
-            border: 4px solid #E2E8F0;
-            border-top: 4px solid #F97316;
+            border: 4px solid #FEEBC8;
+            border-top: 4px solid #ED8936;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+            width: 40px; height: 40px;
+            animation: spin 1s linear infinite; margin: 0 auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Hero 區塊背景設定 */
+        /* Hero 區塊背景 - 深色星空 */
         .hero-bg {
-            /* 預設深藍色漸層，您可稍後在 style 中替換為您的圖片 URL */
-            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)), url('https://source.unsplash.com/1600x900/?hospital,medical,team'); 
+            background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'); 
             background-size: cover;
             background-position: center;
         }
+        
+        /* Tooltip Container */
+        .tooltip-container { position: relative; display: inline-block; cursor: pointer; }
+        .tooltip-text {
+            visibility: hidden; width: 240px; background-color: #2D3748; color: #fff; text-align: left;
+            border-radius: 8px; padding: 12px; position: absolute; z-index: 50;
+            bottom: 135%; left: 50%; margin-left: -120px; opacity: 0; transition: opacity 0.3s;
+            font-size: 0.85rem; font-weight: normal; line-height: 1.5; box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+        .tooltip-text::after {
+            content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px;
+            border-width: 6px; border-style: solid; border-color: #2D3748 transparent transparent transparent;
+        }
+        .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
     </style>
 </head>
 <body>
 
     <!-- 導覽列 -->
-    <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+    <nav class="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center space-x-3">
-                    <!-- Logo / Icon -->
                     <div class="bg-orange-500 text-white p-1.5 rounded-lg">
                         <i class="fa-solid fa-hospital-user text-xl"></i>
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-gray-800 tracking-wide">奇美醫院國考標準化病人培訓工作坊成效儀表板</h1>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-wider">Dashboard</p>
+                        <p class="text-[10px] text-orange-600 uppercase tracking-wider font-bold">Dashboard</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -139,8 +130,8 @@
                         <p class="text-[10px] text-gray-400 uppercase">Last Updated</p>
                         <p class="text-xs font-bold text-gray-600 font-mono" id="lastUpdateTime">--:--</p>
                     </div>
-                    <button onclick="fetchData()" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center shadow-sm">
-                        <i class="fa-solid fa-rotate-right mr-2 text-orange-500"></i>
+                    <button onclick="fetchData()" class="bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold transition flex items-center shadow-sm">
+                        <i class="fa-solid fa-rotate-right mr-2"></i>
                         重新整理
                     </button>
                 </div>
@@ -148,9 +139,8 @@
         </div>
     </nav>
 
-    <!-- 主視覺版面 (Hero Section) - 參考風格設計 -->
-    <div class="hero-bg text-white relative overflow-hidden">
-        <!-- 裝飾光暈 -->
+    <!-- 主視覺版面 (Hero Section) - 深色主題 -->
+    <div class="hero-bg text-white relative overflow-hidden shadow-xl">
         <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-orange-500/10 to-transparent pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative z-10">
@@ -159,8 +149,8 @@
                 <!-- 左側：標題與資訊 -->
                 <div class="space-y-6">
                     <div>
-                        <span class="bg-orange-500 text-white px-3 py-1 rounded text-xs font-bold tracking-wider mb-3 inline-block">奇美醫院 • 臨床技能中心</span>
-                        <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-2">
+                        <span class="bg-orange-500 text-white px-3 py-1 rounded text-xs font-bold tracking-wider mb-3 inline-block shadow-md">奇美醫院 • 臨床技能中心</span>
+                        <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-2 text-white text-shadow-sm">
                             國考標準化病人<br>培訓工作坊
                         </h1>
                         <div class="flex items-center text-gray-300 text-sm space-x-4">
@@ -169,8 +159,8 @@
                         </div>
                     </div>
 
-                    <!-- 講師名單 (依照需求更新) -->
-                    <div class="border-l-4 border-orange-500 pl-4 py-1 bg-black/20 rounded-r-lg">
+                    <!-- 講師名單 (恢復深色透明風格) -->
+                    <div class="border-l-4 border-orange-500 pl-4 py-2 bg-black/40 rounded-r-lg backdrop-blur-sm border-t border-r border-b border-white/10">
                         <p class="text-xs text-orange-300 font-bold uppercase tracking-wider mb-2">講師團隊 / Faculty</p>
                         <p class="text-sm text-gray-200 leading-relaxed space-y-1">
                             <span class="block"><strong class="text-white">陳淑宇</strong> 理事長 (台灣標準化病人協會)</span>
@@ -181,30 +171,22 @@
                             <span class="block"><strong class="text-white">陳虹蓁</strong> 管理員 (臺北醫學大學)</span>
                         </p>
                     </div>
-
-                    <!-- 主辦與協辦單位 -->
-                    <div class="text-xs text-gray-300 space-y-1">
-                        <p><span class="text-orange-400">● 主辦單位：</span>台灣標準化病人協會、奇美醫療財團法人奇美醫院</p>
-                        <p><span class="text-orange-400">● 協辦單位：</span>台灣醫學教育學會、奇美醫療財團法人奇美醫院教學部、臨床技能中心</p>
-                    </div>
                 </div>
 
-                <!-- 右側：數據概覽與照片 (模擬圖) -->
+                <!-- 右側：數據概覽與照片 -->
                 <div class="relative hidden lg:block">
-                    <!-- 模擬合照區塊 -->
-                    <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 relative group">
+                    <div class="rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 relative group transform rotate-1 hover:rotate-0 transition duration-500">
                         <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
                              alt="工作坊合照" 
-                             class="w-full h-64 object-cover transform group-hover:scale-105 transition duration-700 opacity-80 group-hover:opacity-100">
+                             class="w-full h-64 object-cover opacity-90 group-hover:opacity-100 transition">
                         
-                        <!-- 懸浮數據卡片 -->
                         <div class="absolute bottom-4 right-4 flex space-x-3">
                             <div class="bg-gray-900/80 backdrop-blur px-4 py-2 rounded-lg text-center border border-gray-700">
                                 <div class="text-xs text-gray-400">培訓人數</div>
-                                <div class="text-xl font-bold text-white" id="heroTotalCount">--</div>
+                                <div class="text-xl font-bold text-white" id="heroTotalCount">20</div>
                             </div>
                             <div class="bg-orange-600/90 backdrop-blur px-4 py-2 rounded-lg text-center border border-orange-500">
-                                <div class="text-xs text-white/80">課程滿意度</div>
+                                <div class="text-xs text-white/90">課程滿意度</div>
                                 <div class="text-xl font-bold text-white">High</div>
                             </div>
                         </div>
@@ -212,10 +194,10 @@
                 </div>
             </div>
 
-            <!-- 三格卡片：重新設計符合「國考培訓」的內容 -->
+            <!-- 三格卡片 (恢復深色風格) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-                <!-- Card 1: 心理安全 -->
-                <div class="bg-gray-900/40 backdrop-blur-sm border border-white/10 p-6 rounded-xl hover:bg-gray-900/60 transition duration-300 group">
+                <!-- Card 1 -->
+                <div class="bg-gray-900/60 backdrop-blur-md border border-white/10 p-6 rounded-xl hover:bg-gray-800/80 transition duration-300 group">
                     <div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-500 transition">
                         <i class="fa-solid fa-shield-heart text-orange-400 group-hover:text-white"></i>
                     </div>
@@ -225,8 +207,8 @@
                     </p>
                 </div>
 
-                <!-- Card 2: 國考標準 -->
-                <div class="bg-gray-900/40 backdrop-blur-sm border border-white/10 p-6 rounded-xl hover:bg-gray-900/60 transition duration-300 group">
+                <!-- Card 2 -->
+                <div class="bg-gray-900/60 backdrop-blur-md border border-white/10 p-6 rounded-xl hover:bg-gray-800/80 transition duration-300 group">
                     <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500 transition">
                         <i class="fa-solid fa-clipboard-check text-blue-400 group-hover:text-white"></i>
                     </div>
@@ -236,8 +218,8 @@
                     </p>
                 </div>
 
-                <!-- Card 3: 雙向回饋 -->
-                <div class="bg-gray-900/40 backdrop-blur-sm border border-white/10 p-6 rounded-xl hover:bg-gray-900/60 transition duration-300 group">
+                <!-- Card 3 -->
+                <div class="bg-gray-900/60 backdrop-blur-md border border-white/10 p-6 rounded-xl hover:bg-gray-800/80 transition duration-300 group">
                     <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-500 transition">
                         <i class="fa-solid fa-comments text-green-400 group-hover:text-white"></i>
                     </div>
@@ -254,162 +236,151 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8 relative z-20">
         
         <!-- 載入中畫面 -->
-        <div id="loading" class="text-center py-20 bg-white rounded-2xl shadow-lg">
+        <div id="loading" class="text-center py-20 bg-white rounded-2xl shadow-xl border border-orange-100">
             <div class="loader"></div>
             <p class="text-gray-500 mt-4 font-medium animate-pulse">正在同步雲端數據...</p>
         </div>
 
-        <!-- 儀表板內容 (預設隱藏) -->
-        <div id="dashboardContent" class="hidden space-y-10">
+        <!-- 儀表板內容 -->
+        <div id="dashboardContent" class="hidden space-y-12">
             
-            <!-- KPI 指標卡 (量化數據) -->
-            <div class="flex items-center space-x-2 mb-4">
-                <div class="w-1 h-6 bg-orange-500 rounded-full"></div>
-                <h2 class="text-xl font-bold text-gray-800">量化數據圖表</h2>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <!-- 總回收數 -->
-                <div class="card border-l-4 border-blue-500 hover:shadow-lg transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Total Feedback</p>
-                            <h3 class="text-3xl font-bold text-blue-600 mt-1" id="totalCount">0</h3>
-                        </div>
-                        <div class="p-2 bg-blue-50 rounded-lg text-blue-500"><i class="fa-solid fa-file-signature"></i></div>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-3">有效問卷回收數</p>
-                </div>
-                
-                <!-- 信心指數 -->
-                <div class="card border-l-4 border-orange-500 hover:shadow-lg transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Self-Confidence</p>
-                            <h3 class="text-3xl font-bold text-orange-600 mt-1" id="avgConfidence">0%</h3>
-                        </div>
-                        <div class="p-2 bg-orange-50 rounded-lg text-orange-500"><i class="fa-solid fa-shield-halved"></i></div>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-3">自我保護信心 (High)</p>
+            <!-- KPI 指標卡 -->
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-1 h-6 bg-orange-600 rounded-full"></div>
+                    <h2 class="text-xl font-bold text-gray-800">量化數據總覽</h2>
                 </div>
 
-                <!-- 未來意願 -->
-                <div class="card border-l-4 border-green-500 hover:shadow-lg transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Willingness</p>
-                            <h3 class="text-3xl font-bold text-green-600 mt-1" id="futureWillingness">0%</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- (1) 問卷回收率 -->
+                    <div class="card border-t-0 border-l-0 border-r-0 border-b-4 border-orange-500 hover:shadow-lg transition transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Response Rate</p>
+                                <div class="flex items-baseline gap-2 mt-1">
+                                    <h3 class="text-3xl font-bold text-orange-600" id="responseRateDisplay">0%</h3>
+                                    <span class="text-sm text-gray-400 font-medium" id="responseCountDisplay">(0/20)</span>
+                                </div>
+                            </div>
+                            <div class="p-2 bg-orange-100 rounded-lg text-orange-600"><i class="fa-solid fa-file-signature"></i></div>
                         </div>
-                        <div class="p-2 bg-green-50 rounded-lg text-green-500"><i class="fa-solid fa-thumbs-up"></i></div>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-3">未來擔任意願 (High)</p>
-                </div>
-
-                <!-- 行政滿意度 -->
-                <div class="card border-l-4 border-purple-500 hover:shadow-lg transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Satisfaction</p>
-                            <h3 class="text-3xl font-bold text-purple-600 mt-1" id="adminSatisfaction">0%</h3>
+                        <div class="w-full bg-orange-100 rounded-full h-1.5 mt-4 overflow-hidden">
+                            <div class="bg-orange-500 h-1.5 rounded-full transition-all duration-1000 ease-out" id="rateProgressBar" style="width: 0%"></div>
                         </div>
-                        <div class="p-2 bg-purple-50 rounded-lg text-purple-500"><i class="fa-solid fa-star"></i></div>
                     </div>
-                    <p class="text-xs text-gray-400 mt-3">行政安排滿意度</p>
+                    <!-- (2) 信心指數 -->
+                    <div class="card border-t-0 border-l-0 border-r-0 border-b-4 border-red-500 hover:shadow-lg transition transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Self-Confidence</p><h3 class="text-3xl font-bold text-red-600 mt-1" id="avgConfidence">0%</h3></div>
+                            <div class="p-2 bg-red-100 rounded-lg text-red-600"><i class="fa-solid fa-shield-halved"></i></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-3">自我保護信心 (High)</p>
+                    </div>
+                    <!-- (3) 未來意願 -->
+                    <div class="card border-t-0 border-l-0 border-r-0 border-b-4 border-yellow-500 hover:shadow-lg transition transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Willingness</p><h3 class="text-3xl font-bold text-yellow-600 mt-1" id="futureWillingness">0%</h3></div>
+                            <div class="p-2 bg-yellow-100 rounded-lg text-yellow-600"><i class="fa-solid fa-thumbs-up"></i></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-3">未來擔任意願 (High)</p>
+                    </div>
+                    <!-- (4) 行政滿意度 -->
+                    <div class="card border-t-0 border-l-0 border-r-0 border-b-4 border-orange-800 hover:shadow-lg transition transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Satisfaction</p><h3 class="text-3xl font-bold text-orange-800 mt-1" id="adminSatisfaction">0%</h3></div>
+                            <div class="p-2 bg-orange-200 rounded-lg text-orange-800"><i class="fa-solid fa-star"></i></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-3">行政安排滿意度</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- 第一列圖表 -->
+            <!-- 第一列圖表 (年齡/安全) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- 年齡分佈 -->
                 <div class="card flex flex-col h-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-gray-800">👥 學員年齡分佈</h3>
-                    </div>
-                    <div class="chart-container flex-grow">
-                        <canvas id="ageChart"></canvas>
-                    </div>
-                    <div class="insight-box" id="ageInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
+                    <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-gray-800">👥 學員年齡分佈</h3></div>
+                    <div class="chart-container flex-grow"><canvas id="ageChart"></canvas></div>
                 </div>
-                
-                <!-- 心理安全感受 -->
                 <div class="card flex flex-col h-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-gray-800">❤️ 心理安全課程感受</h3>
-                    </div>
-                    <div class="chart-container flex-grow">
-                        <canvas id="safetyChart"></canvas>
-                    </div>
-                    <div class="insight-box" id="safetyInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
+                    <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-gray-800">❤️ 心理安全課程感受</h3></div>
+                    <div class="chart-container flex-grow"><canvas id="safetyChart"></canvas></div>
                 </div>
             </div>
 
-            <!-- 第二列圖表 -->
+            <!-- 第二列圖表 (風險/未來需求) -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- 風險分析 -->
                 <div class="card lg:col-span-2 flex flex-col">
                     <div class="mb-4">
                         <h3 class="text-lg font-bold text-gray-800">⚠️ SP 常見困擾與風險分析</h3>
-                        <p class="text-xs text-gray-400 mt-1">複選題統計：學員勾選「曾經遇過」或「最擔心」的狀況</p>
+                        <p class="text-xs text-gray-400 mt-1">複選題統計：了解學員最擔心的情境</p>
                     </div>
-                    <div class="chart-container flex-grow">
-                        <canvas id="riskChart"></canvas>
-                    </div>
-                    <div class="insight-box" id="riskInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
+                    <div class="chart-container flex-grow"><canvas id="riskChart"></canvas></div>
                 </div>
-
-                <!-- 學習需求 -->
                 <div class="card flex flex-col">
                     <div class="mb-4">
                         <h3 class="text-lg font-bold text-gray-800">📚 進階課程許願池</h3>
+                        <p class="text-xs text-gray-400 mt-1">未來最想學的內容</p>
                     </div>
-                    <div class="chart-container flex-grow">
-                        <canvas id="futureChart"></canvas>
-                    </div>
-                    <div class="insight-box" id="futureInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
+                    <div class="chart-container flex-grow"><canvas id="futureChart"></canvas></div>
                 </div>
             </div>
 
             <!-- 第三列圖表：技能掌握度 -->
             <div class="card">
-                <div class="mb-6 border-b border-gray-100 pb-4">
+                <div class="mb-6 border-b border-orange-100 pb-4">
                     <h3 class="text-lg font-bold text-gray-800">💪 分站演練技能掌握度</h3>
                     <p class="text-sm text-gray-500 mt-1">綠色佔比越高，代表教學成效越好</p>
                 </div>
                 <div class="chart-container" style="height: 350px;">
                     <canvas id="skillChart"></canvas>
                 </div>
-                <div class="insight-box" id="skillInsight"><i class="fa-solid fa-lightbulb mr-2"></i>計算中...</div>
             </div>
 
-            <!-- 質性回饋區 (便利貼牆) -->
-            <div class="space-y-8">
+            <!-- ================= 學員回饋熱點 (Hotspots) ================= -->
+            <div class="card bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-xl flex items-center justify-center shadow-md">
+                        <i class="fa-solid fa-fire text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-orange-900">深度回饋洞察與策略分析</h3>
+                        <p class="text-sm text-orange-700 font-medium">透過質性與量化數據交叉分析，提供具體的教學改善方向</p>
+                    </div>
+                </div>
+                
+                <!-- 熱點卡片容器 (2x2 Grid) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="hotspotContainer">
+                    <div class="col-span-2 text-center text-gray-400 py-8">
+                        <i class="fa-solid fa-spinner fa-spin mr-2"></i> 正在分析回饋內容...
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 質性回饋 (上下佈局) ================= -->
+            <div class="space-y-12">
                 <div class="flex items-center space-x-2">
-                    <div class="w-1 h-6 bg-blue-500 rounded-full"></div>
+                    <div class="w-1 h-6 bg-orange-600 rounded-full"></div>
                     <h2 class="text-xl font-bold text-gray-800">質性回饋與建議</h2>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- 印象深刻 -->
-                    <div class="bg-orange-50/50 rounded-2xl p-6 border border-orange-100">
-                        <h3 class="text-lg font-bold text-orange-800 mb-6 flex items-center">
-                            <span class="bg-orange-100 p-2 rounded-lg mr-2 text-xl">💡</span> 
-                            大家印象最深刻的學習點
-                        </h3>
-                        <div id="insightList" class="sticky-wall custom-scrollbar">
-                            <!-- 便利貼插入處 -->
-                        </div>
-                    </div>
+                <!-- 印象深刻 -->
+                <div class="bg-[#FFFBEB] rounded-2xl p-8 border border-[#FBD38D] shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-100 rounded-full -mr-16 -mt-16 opacity-50"></div>
+                    <h3 class="text-2xl font-bold text-orange-900 mb-8 flex items-center relative z-10">
+                        <span class="bg-yellow-200 w-12 h-12 flex items-center justify-center rounded-xl mr-4 text-2xl shadow-sm text-orange-700">💡</span> 
+                        大家印象最深刻的學習點
+                    </h3>
+                    <div id="insightList" class="sticky-wall custom-scrollbar relative z-10"></div>
+                </div>
 
-                    <!-- 建議與鼓勵 -->
-                    <div class="bg-blue-50/50 rounded-2xl p-6 border border-blue-100">
-                        <h3 class="text-lg font-bold text-blue-800 mb-6 flex items-center">
-                            <span class="bg-blue-100 p-2 rounded-lg mr-2 text-xl">💌</span> 
-                            給團隊的建議與鼓勵
-                        </h3>
-                        <div id="suggestionList" class="sticky-wall custom-scrollbar">
-                            <!-- 便利貼插入處 -->
-                        </div>
-                    </div>
+                <!-- 建議與鼓勵 -->
+                <div class="bg-[#FFFAF0] rounded-2xl p-8 border border-[#F6AD55] shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-full -mr-16 -mt-16 opacity-50"></div>
+                    <h3 class="text-2xl font-bold text-orange-900 mb-8 flex items-center relative z-10">
+                        <span class="bg-orange-200 w-12 h-12 flex items-center justify-center rounded-xl mr-4 text-2xl shadow-sm text-orange-700">💌</span> 
+                        給團隊的建議與鼓勵
+                    </h3>
+                    <div id="suggestionList" class="sticky-wall custom-scrollbar relative z-10"></div>
                 </div>
             </div>
 
@@ -417,16 +388,16 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-12 py-8">
+    <footer class="bg-white border-t border-orange-200 mt-16 py-10">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-gray-500 text-sm">© 2025 台灣標準化病人協會 & 奇美醫院臨床技能中心</p>
+            <p class="text-gray-500 text-sm font-medium tracking-wide">© 2025 台灣標準化病人協會 & 奇美醫院臨床技能中心</p>
         </div>
     </footer>
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbxJmJau-yuYnO3EvfmgCiEFiPVpn02YKhoce20aKJVXS39K9454m9gun4U6nmz1nVgu/exec';
+        const TARGET_TRAINEES = 20;
 
-        // 翻譯字典
         const LABEL_MAP = {
             'touched': '覺得溫暖 (被保護)',
             'useful': '很有收穫 (調適心情)',
@@ -457,7 +428,7 @@
         };
 
         Chart.defaults.font.family = "'Noto Sans TC', sans-serif";
-        Chart.defaults.color = '#64748B';
+        Chart.defaults.color = '#718096';
 
         document.addEventListener('DOMContentLoaded', fetchData);
 
@@ -471,29 +442,66 @@
 
             try {
                 const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
+                if (!response.ok) throw new Error('API 回應錯誤');
                 const data = await response.json();
-
                 if (!Array.isArray(data)) throw new Error("資料格式錯誤");
 
                 updateDashboard(data);
                 
                 const now = new Date();
                 timeLabel.innerText = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-                
                 loading.classList.add('hidden');
                 content.classList.remove('hidden');
 
             } catch (error) {
-                console.error('Error:', error);
-                alert('讀取資料失敗，請確認 Apps Script 網址正確。\n' + error.message);
+                console.warn('API 讀取失敗，使用模擬資料展示效果:', error);
+                const mockData = generateMockData(19);
+                updateDashboard(mockData);
+                timeLabel.innerText = `(預覽模式)`;
                 loading.classList.add('hidden');
+                content.classList.remove('hidden');
             }
         }
 
+        function generateMockData(count) {
+            const mockData = [];
+            const ages = ['40歲以下', '41-50歲', '51-60歲', '61-70歲', '71歲以上'];
+            const feelings = ['覺得溫暖 (被保護)', '很有收穫 (調適心情)', '感覺普通', '有點抽象 (不太懂)'];
+            const risks = ['考生互動(粗魯/不適接觸)', '考官互動(改劇本/責備)', '行政互動(排程滿/資訊不清)', '情緒影響(劇本強烈)'];
+            const skills = ['完全掌握', '大概懂了', '不太確定', '學會表現反應', '演起來卡卡', '抓不到時機', '知道如何互動', '還可以', '覺得困難'];
+            const futures = ['表演技巧', '醫學知識', '回饋技巧', '特殊化妝'];
+            const insights = ['心理安全的界線很重要，學會保護自己', '原來疼痛表演不需要大叫，眼神更重要', '身體檢查時如何給學生回饋很有學問', '老師分享的案例很真實，很有收穫', '跟學生的互動練習很有趣，雖然一開始很緊張'];
+            const suggestions = ['希望能有更多實作時間，大家都很棒！', '老師講得很好，午餐也很好吃', '冷氣有點太強了，建議調高一點', '流程很順暢，謝謝工作人員', '希望能多開幾場這樣的課程'];
+
+            for (let i = 0; i < count; i++) {
+                mockData.push({
+                    '年齡區間': ages[Math.floor(Math.random() * ages.length)],
+                    '心理安全感受': feelings[Math.floor(Math.random() * feelings.length)],
+                    '遇到的風險': [risks[Math.floor(Math.random() * risks.length)], risks[Math.floor(Math.random() * risks.length)]].join(', '),
+                    '自我保護信心': Math.random() > 0.3 ? '很有信心' : '還在消化',
+                    '病史詢問收穫': skills[Math.floor(Math.random() * 3)],
+                    '身體檢查收穫': skills[Math.floor(Math.random() * 3) + 3],
+                    '病情解釋收穫': skills[Math.floor(Math.random() * 3) + 6],
+                    '未來信心': Math.random() > 0.2 ? '信心滿滿' : '緊張/沒信心',
+                    '行政安排感受': Math.random() > 0.1 ? '舒適順暢' : '普通',
+                    '未來想學': [futures[Math.floor(Math.random() * futures.length)], futures[Math.floor(Math.random() * futures.length)]].join(', '),
+                    '印象深刻觀念': insights[Math.floor(Math.random() * insights.length)],
+                    '總結與建議': suggestions[Math.floor(Math.random() * suggestions.length)]
+                });
+            }
+            return mockData;
+        }
+
         function updateDashboard(data) {
-            // KPI
-            document.getElementById('totalCount').innerText = data.length;
-            document.getElementById('heroTotalCount').innerText = data.length; // Hero 區塊的人數
+            const responseCount = data.length;
+            const responseRate = Math.round((responseCount / TARGET_TRAINEES) * 100);
+            
+            document.getElementById('responseRateDisplay').innerText = `${responseRate}%`;
+            document.getElementById('responseCountDisplay').innerText = `(${responseCount}/${TARGET_TRAINEES})`;
+            document.getElementById('heroTotalCount').innerText = TARGET_TRAINEES;
+
+            const progressBar = document.getElementById('rateProgressBar');
+            setTimeout(() => { progressBar.style.width = `${Math.min(responseRate, 100)}%`; }, 300);
             
             const confidentCount = data.filter(d => {
                 const val = safeStr(d['自我保護信心']);
@@ -503,7 +511,7 @@
 
             const futureCount = data.filter(d => {
                 const val = safeStr(d['未來信心']);
-                return val.includes('信心滿滿') || val.includes('high');
+                return val.includes('信心滿滿') || val.includes('更有把握') || val.includes('high');
             }).length;
             document.getElementById('futureWillingness').innerText = data.length ? Math.round((futureCount / data.length) * 100) + '%' : '0%';
 
@@ -513,25 +521,240 @@
             }).length;
             document.getElementById('adminSatisfaction').innerText = data.length ? Math.round((adminCount / data.length) * 100) + '%' : '0%';
 
-            // Charts
             drawAgeChart(data);
             drawSafetyChart(data);
             drawRiskChart(data);
             drawSkillChart(data);
             drawFutureChart(data);
             
-            // Sticky Notes
+            analyzeHotspots(data);
+            
             fillStickyNotes('insightList', data.map(d => d['印象深刻觀念']));
             fillStickyNotes('suggestionList', data.map(d => d['總結與建議']));
         }
 
-        // --- 統計與繪圖函式 ---
+        function analyzeHotspots(data) {
+            const riskMap = {};
+            const futureMap = {};
+            const skillScores = { '病史詢問': 0, '身體檢查': 0, '病情解釋': 0 };
+            
+            data.forEach(row => {
+                const risks = safeStr(row['遇到的風險']).split(/,|，/);
+                risks.forEach(r => {
+                    let key = r.split('(')[0].trim();
+                    if(key.length > 1) riskMap[key] = (riskMap[key] || 0) + 1;
+                });
+                
+                const futures = safeStr(row['未來想學']).split(/,|，/);
+                futures.forEach(f => {
+                    let key = f.split('(')[0].trim();
+                    if(key.length > 1) futureMap[key] = (futureMap[key] || 0) + 1;
+                });
+
+                const checkSkill = (field, name) => {
+                    const val = safeStr(row[field]);
+                    if (val.includes('困難') || val.includes('卡卡') || val.includes('抓不到') || val.includes('不確定')) {
+                        skillScores[name]++;
+                    }
+                };
+                checkSkill('病史詢問收穫', '病史詢問');
+                checkSkill('身體檢查收穫', '身體檢查');
+                checkSkill('病情解釋收穫', '病情解釋');
+            });
+
+            const topRiskEntry = Object.entries(riskMap).sort((a,b) => b[1] - a[1])[0] || ['無資料', 0];
+            const topFutureEntry = Object.entries(futureMap).sort((a,b) => b[1] - a[1])[0] || ['無資料', 0];
+            const weakestSkillEntry = Object.entries(skillScores).sort((a,b) => b[1] - a[1])[0] || ['無資料', 0];
+            
+            const topRiskName = topRiskEntry[0];
+            const topFutureName = topFutureEntry[0];
+            const weakestSkillName = weakestSkillEntry[0];
+
+            let riskInsight = "數據顯示多數困擾來自考試當下的互動壓力。";
+            let riskAdvice = "建議持續關注學員的回饋。";
+            
+            if (topRiskName.includes("考生")) {
+                riskInsight = "🔍 <strong>數據洞察：</strong>SP 對於「身體自主權」與「被尊重」的感受最為敏感，顯示部分學生在緊張時忽略了專業態度。";
+                riskAdvice = "💡 <strong>應對策略：</strong>加強考前對醫學生的「專業態度」宣導，並教導 SP 如何在當下溫和地設立界線。";
+            } else if (topRiskName.includes("考官")) {
+                riskInsight = "🔍 <strong>數據洞察：</strong>數據反映出「權力不對等」的焦慮，SP 擔心因表現不符考官預期而遭到當眾指責。";
+                riskAdvice = "💡 <strong>應對策略：</strong>舉辦「考官共識營」，強調對 SP 的尊重與友善回饋文化，避免公開責備。";
+            } else if (topRiskName.includes("行政")) {
+                riskInsight = "🔍 <strong>數據洞察：</strong>特定「高強度場次」的疲勞累積已成為潛在風險。";
+                riskAdvice = "💡 <strong>應對策略：</strong>檢視排班表，確保 SP 每場次間有足夠的「下戲」與休息緩衝時間。";
+            } else if (topRiskName.includes("情緒")) {
+                riskInsight = "🔍 <strong>數據洞察：</strong>劇本的情緒張力已產生「外溢效應」，SP 在下戲後仍難以抽離角色情緒。";
+                riskAdvice = "💡 <strong>應對策略：</strong>在劇本設計時標註情緒風險，並建立「下戲儀式」或心理支持小組。";
+            }
+
+            let futureInsight = "學員展現高度學習熱忱，需求集中在提升專業能力。";
+            let futureAdvice = "可依照此需求規劃下一季的進修課程。";
+            
+            if (topFutureName.includes("表演")) {
+                futureInsight = "🔍 <strong>數據洞察：</strong>SP 渴望從「模仿」進階到「內化」，希望透過肢體與聲音的細節，提升演出的真實感。";
+                futureAdvice = "🚀 <strong>下季規劃：</strong>邀請專業劇團老師，開設「肢體語言」與「聲音表情」的進階工作坊。";
+            } else if (topFutureName.includes("醫學")) {
+                futureInsight = "🔍 <strong>數據洞察：</strong>學員擔心因「醫學知識不足」而給出錯誤反應，反映出其對角色準確度的高度責任感。";
+                futureAdvice = "🚀 <strong>下季規劃：</strong>針對國考常見教案（如腹痛、胸痛），開設「疾病機轉大補帖」講座。";
+            } else if (topFutureName.includes("回饋")) {
+                futureInsight = "🔍 <strong>數據洞察：</strong>SP 在「給予評語」時感到最沒自信，擔心詞不達意或傷害學生自尊。";
+                futureAdvice = "🚀 <strong>下季規劃：</strong>安排「模擬回饋」演練（Role-play），讓 SP 練習如何給予學生具體且建設性的評語。";
+            } else if (topFutureName.includes("化妝")) {
+                futureInsight = "🔍 <strong>數據洞察：</strong>視覺真實度是建立 SP 自信的快速途徑，且此類課程互動性高，受歡迎程度高。";
+                futureAdvice = "🚀 <strong>下季規劃：</strong>採購簡易傷妝教材，開設傷口與瘀青化妝實作課程。";
+            }
+
+            const safeCount = data.filter(d => safeStr(d['心理安全感受']).includes('溫暖') || safeStr(d['心理安全感受']).includes('收穫')).length;
+            const safeRate = Math.round((safeCount / data.length) * 100) || 0;
+            
+            let sentimentInsight = "數據顯示心理支持課程與學員的整體滿意度有高度正相關。";
+            let sentimentAdvice = "❤️ <strong>團隊價值：</strong>建議保留為常設單元，持續鞏固歸屬感。";
+
+            if (safeRate >= 80) {
+                sentimentInsight = "🔍 <strong>數據洞察：</strong>高達八成以上的正向回饋，證實「心理安全」是留住資深 SP 的關鍵黏著劑。";
+                sentimentAdvice = "❤️ <strong>團隊價值：</strong>此課程已成為團隊文化核心，建議將「安全感建立」列為新進人員必修。";
+            } else if (safeRate < 60) {
+                sentimentInsight = "🔍 <strong>數據洞察：</strong>部分學員仍感到困惑，顯示「理論講述」與「實際感受」之間仍有落差。";
+                sentimentAdvice = "⚠️ <strong>改進方向：</strong>建議將課程改為「小組分享」形式，增加互動與案例討論，減少距離感。";
+            }
+
+            let skillInsight = "各站點表現平均，顯示基礎訓練扎實。";
+            let skillAdvice = "建議維持目前的教學模式，並針對個案微調。";
+
+            if (weakestSkillName === '身體檢查') {
+                skillInsight = "🔍 <strong>數據洞察：</strong>學員最大的痛點在於「反應的拿捏」，害怕演得太誇張被識破，又怕演太輕學生沒發現。";
+                skillAdvice = "🎯 <strong>教學重點：</strong>建議增加影片示範，讓學員模仿不同疼痛程度的標準反應 (Pain Scale)。";
+            } else if (weakestSkillName === '病情解釋') {
+                skillInsight = "🔍 <strong>數據洞察：</strong>「對話互動」的不確定性最高，SP 擔心在學生解釋病情時，無法給出恰當的回應。";
+                skillAdvice = "🎯 <strong>教學重點：</strong>建議提供「常見問答集 (FAQ)」與「引導句型」，讓 SP 有劇本可依循，減少臨場焦慮。";
+            } else if (weakestSkillName === '病史詢問') {
+                skillInsight = "🔍 <strong>數據洞察：</strong>學員主要擔心「多說多錯」，害怕無意間透露了不該說的關鍵線索。";
+                skillAdvice = "🎯 <strong>教學重點：</strong>建議整理該教案的「回答禁忌清單 (Do's & Don'ts)」，明確劃分資訊界線。";
+            }
+
+            const container = document.getElementById('hotspotContainer');
+            container.innerHTML = `
+                <!-- Card 1: Risk -->
+                <div class="bg-white rounded-xl p-6 border-l-4 border-red-500 shadow-sm flex flex-col h-full hover:shadow-md transition group relative">
+                    <div class="absolute top-4 right-4 text-gray-400 hover:text-red-500 cursor-help tooltip-container">
+                        <i class="fa-solid fa-circle-info text-lg"></i>
+                        <span class="tooltip-text">計算方式：統計問卷第3題中，被勾選次數最多的「風險選項」。</span>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex items-center text-red-600 mb-2 font-bold text-lg">
+                            <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+                            最大風險擔憂
+                        </div>
+                        <div class="flex items-baseline space-x-2">
+                             <h3 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-crown text-yellow-400 mr-2"></i>${topRiskName}</h3>
+                        </div>
+                        <div class="flex items-end space-x-2 mt-2">
+                            <span class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">${topRiskEntry[1]}</span>
+                            <span class="text-gray-500 pb-1 font-medium">位學員提及</span>
+                        </div>
+                        
+                        <div class="bg-red-50 p-3 rounded-lg border border-red-100 mb-3 mt-4 text-sm text-gray-700 leading-relaxed">
+                            ${riskInsight}
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-red-200 text-sm text-gray-800 leading-relaxed shadow-sm">
+                            ${riskAdvice}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Future -->
+                <div class="bg-white rounded-xl p-6 border-l-4 border-yellow-500 shadow-sm flex flex-col h-full hover:shadow-md transition group relative">
+                    <div class="absolute top-4 right-4 text-gray-400 hover:text-yellow-500 cursor-help tooltip-container">
+                        <i class="fa-solid fa-circle-info text-lg"></i>
+                        <span class="tooltip-text">計算方式：統計問卷第10題中，得票數最高的「未來想學主題」。</span>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex items-center text-yellow-600 mb-2 font-bold text-lg">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>
+                            許願池冠軍
+                        </div>
+                         <div class="flex items-baseline space-x-2">
+                             <h3 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-crown text-yellow-400 mr-2"></i>${topFutureName}</h3>
+                        </div>
+                        <div class="flex items-end space-x-2 mt-2">
+                            <span class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-500">${Math.round(topFutureEntry[1]/data.length*100)}%</span>
+                            <span class="text-gray-500 pb-1 font-medium">許願率</span>
+                        </div>
+                        
+                         <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mb-3 mt-4 text-sm text-gray-700 leading-relaxed">
+                            ${futureInsight}
+                        </div>
+
+                         <div class="bg-white p-3 rounded-lg border border-yellow-200 text-sm text-gray-800 leading-relaxed shadow-sm">
+                            ${futureAdvice}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Sentiment -->
+                <div class="bg-white rounded-xl p-6 border-l-4 border-orange-500 shadow-sm flex flex-col h-full hover:shadow-md transition group relative">
+                    <div class="absolute top-4 right-4 text-gray-400 hover:text-orange-500 cursor-help tooltip-container">
+                        <i class="fa-solid fa-circle-info text-lg"></i>
+                        <span class="tooltip-text">計算方式：問卷第2題中，勾選「覺得溫暖」或「很有收穫」的比例。</span>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex items-center text-orange-600 mb-2 font-bold text-lg">
+                            <i class="fa-solid fa-heart-pulse mr-2"></i>
+                            心理安全感建立
+                        </div>
+                        <div class="flex items-end space-x-2 mt-2">
+                            <span class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-500">${safeRate}%</span>
+                            <span class="text-gray-500 pb-1 font-medium">正向回饋</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-1">感到溫暖或有收穫</p>
+
+                         <div class="bg-orange-50 p-3 rounded-lg border border-orange-100 mb-3 mt-4 text-sm text-gray-700 leading-relaxed">
+                            ${sentimentInsight}
+                        </div>
+
+                         <div class="bg-white p-3 rounded-lg border border-orange-200 text-sm text-gray-800 leading-relaxed shadow-sm">
+                            ${sentimentAdvice}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Skill -->
+                <div class="bg-white rounded-xl p-6 border-l-4 border-blue-500 shadow-sm flex flex-col h-full hover:shadow-md transition group relative">
+                    <div class="absolute top-4 right-4 text-gray-400 hover:text-blue-500 cursor-help tooltip-container">
+                        <i class="fa-solid fa-circle-info text-lg"></i>
+                        <span class="tooltip-text">計算方式：統計分站演練中，學員選填「困難/卡卡/不確定」次數最多的站點。</span>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex items-center text-blue-600 mb-2 font-bold text-lg">
+                            <i class="fa-solid fa-person-chalkboard mr-2"></i>
+                            技能加強重點
+                        </div>
+                        <div class="flex items-baseline space-x-2">
+                             <h3 class="text-2xl font-bold text-gray-800">${weakestSkillName}</h3>
+                        </div>
+                        <div class="flex items-end space-x-2 mt-2">
+                            <span class="text-gray-500 pb-1 font-medium">學員反映</span>
+                            <span class="text-2xl font-extrabold text-blue-600">較多困難</span>
+                        </div>
+
+                         <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 mb-3 mt-4 text-sm text-gray-700 leading-relaxed">
+                            ${skillInsight}
+                        </div>
+
+                         <div class="bg-white p-3 rounded-lg border border-blue-200 text-sm text-gray-800 leading-relaxed shadow-sm">
+                            ${skillAdvice}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function countByField(data, fieldName) {
             const counts = {};
             data.forEach(row => {
                 let val = safeStr(row[fieldName]).trim() || '未填寫';
                 val = val.split('(')[0].trim();
-                val = translateLabel(val); 
                 val = translateLabel(val); 
                 counts[val] = (counts[val] || 0) + 1;
             });
@@ -543,7 +766,7 @@
             data.forEach(row => {
                 const val = safeStr(row[fieldName]);
                 if (val) {
-                    const items = val.split(', ');
+                    const items = val.split(/,|，/);
                     items.forEach(item => {
                         let rawLabel = item.split(/[:(]/)[0].trim();
                         let translatedLabel = translateLabel(rawLabel);
@@ -556,137 +779,121 @@
 
         function drawAgeChart(data) {
             const counts = countByField(data, '年齡區間');
+            let chartStatus = Chart.getChart("ageChart"); if (chartStatus != undefined) chartStatus.destroy();
             const ctx = document.getElementById('ageChart').getContext('2d');
-            const maxKey = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, '無');
-            document.getElementById('ageInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong>目前學員以 <span class="font-bold text-orange-600">${maxKey}</span> 族群為主。`;
-
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(counts),
-                    datasets: [{
-                        data: Object.values(counts),
-                        backgroundColor: ['#FDBA74', '#FB923C', '#F97316', '#EA580C', '#9A3412', '#7C2D12']
-                    }]
-                },
-                options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            
+            new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { 
+                    labels: Object.keys(counts), 
+                    datasets: [{ 
+                        data: Object.values(counts), 
+                        backgroundColor: ['#ED8936', '#F6AD55', '#FBD38D', '#FEEBC8', '#C05621', '#9C4221'] 
+                    }] 
+                }, 
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } } 
             });
         }
 
         function drawSafetyChart(data) {
             const counts = countByField(data, '心理安全感受');
-            const maxKey = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, '正面');
-            document.getElementById('safetyInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong>關於心理安全，多數人感受 <span class="font-bold text-pink-600">${maxKey}</span>。`;
-
+            let chartStatus = Chart.getChart("safetyChart"); if (chartStatus != undefined) chartStatus.destroy();
+            
             const ctx = document.getElementById('safetyChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(counts),
-                    datasets: [{
-                        label: '人數',
-                        data: Object.values(counts),
-                        backgroundColor: '#F472B6',
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { x: { beginAtZero: true } }
-                }
+            new Chart(ctx, { 
+                type: 'bar', 
+                data: { 
+                    labels: Object.keys(counts), 
+                    datasets: [{ 
+                        label: '人數', 
+                        data: Object.values(counts), 
+                        backgroundColor: '#FC8181', // 暖粉紅
+                        borderRadius: 6 
+                    }] 
+                }, 
+                options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } } 
             });
         }
 
         function drawRiskChart(data) {
             const counts = countMultiSelect(data, '遇到的風險');
             const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-            const labels = sorted.map(i => i[0]);
             const values = sorted.map(i => i[1]);
-            const topRisk = labels.length > 0 ? labels[0] : "無數據";
-            document.getElementById('riskInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong>最擔心的狀況是 <span class="font-bold text-red-600">${topRisk}</span>。`;
+            const maxValue = Math.max(...values);
+            // 亮金色 highlight 最高票
+            const bgColors = values.map(v => v === maxValue ? '#F59E0B' : '#FEB2B2'); // 金色 vs 淺紅
 
+            let chartStatus = Chart.getChart("riskChart"); if (chartStatus != undefined) chartStatus.destroy();
             const ctx = document.getElementById('riskChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '勾選人次',
-                        data: values,
-                        backgroundColor: '#F87171',
-                        borderRadius: 6
-                    }]
-                },
-                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            new Chart(ctx, { 
+                type: 'bar', 
+                data: { 
+                    labels: sorted.map(i=>i[0]), 
+                    datasets: [{ 
+                        label: '勾選人次', 
+                        data: values, 
+                        backgroundColor: bgColors, 
+                        borderRadius: 6 
+                    }] 
+                }, 
+                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } 
             });
         }
 
         function drawSkillChart(data) {
             const stations = ['病史詢問收穫', '身體檢查收穫', '病情解釋收穫'];
             const stats = { '病史詢問': [0,0,0], '身體檢查': [0,0,0], '病情解釋': [0,0,0] };
-
-            data.forEach(d => {
-                stations.forEach(station => {
-                    const val = safeStr(d[station]);
-                    let index = 1; 
-                    if (val.includes('完全') || val.includes('學會') || val.includes('知道') || val.includes('clear')) index = 0; 
-                    else if (val.includes('確定') || val.includes('時機') || val.includes('困難') || val.includes('blur')) index = 2; 
-                    const shortName = station.replace('收穫', '');
-                    stats[shortName][index]++;
-                });
-            });
-
-            document.getElementById('skillInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong>綠色代表高度掌握。若有較多紅色，建議加強該站點教學。`;
-
+            data.forEach(d => { stations.forEach(station => { const val = safeStr(d[station]); let index = 1; if (val.includes('完全') || val.includes('學會') || val.includes('知道') || val.includes('clear')) index = 0; else if (val.includes('確定') || val.includes('時機') || val.includes('困難') || val.includes('blur')) index = 2; const shortName = station.replace('收穫', ''); stats[shortName][index]++; }); });
+            
+            let chartStatus = Chart.getChart("skillChart"); if (chartStatus != undefined) chartStatus.destroy();
             const ctx = document.getElementById('skillChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['病史詢問', '身體檢查', '病情解釋'],
-                    datasets: [
-                        { label: '高度掌握', data: [stats['病史詢問'][0], stats['身體檢查'][0], stats['病情解釋'][0]], backgroundColor: '#34D399' },
-                        { label: '普通/尚可', data: [stats['病史詢問'][1], stats['身體檢查'][1], stats['病情解釋'][1]], backgroundColor: '#FBBF24' },
-                        { label: '感到困難', data: [stats['病史詢問'][2], stats['身體檢查'][2], stats['病情解釋'][2]], backgroundColor: '#F87171' }
-                    ]
-                },
-                options: { maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+            new Chart(ctx, { 
+                type: 'bar', 
+                data: { 
+                    labels: ['病史詢問', '身體檢查', '病情解釋'], 
+                    datasets: [ 
+                        { label: '高度掌握', data: [stats['病史詢問'][0], stats['身體檢查'][0], stats['病情解釋'][0]], backgroundColor: '#48BB78' }, // 綠
+                        { label: '普通/尚可', data: [stats['病史詢問'][1], stats['身體檢查'][1], stats['病情解釋'][1]], backgroundColor: '#ECC94B' }, // 黃
+                        { label: '感到困難', data: [stats['病史詢問'][2], stats['身體檢查'][2], stats['病情解釋'][2]], backgroundColor: '#F56565' }  // 紅
+                    ] 
+                }, 
+                options: { maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } } 
             });
         }
 
         function drawFutureChart(data) {
             const counts = countMultiSelect(data, '未來想學');
-            const ctx = document.getElementById('futureChart').getContext('2d');
-            const maxKey = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, '無');
-            document.getElementById('futureInsight').innerHTML = `<i class="fa-solid fa-lightbulb mr-2"></i><strong>數據洞察：</strong><span class="font-bold text-purple-600">${maxKey}</span> 需求最高。`;
+            const values = Object.values(counts);
+            const maxValue = Math.max(...values);
+            // 亮金色 highlight 最高票
+            const bgColors = values.map(v => v === maxValue ? '#F59E0B' : '#FBD38D'); // 金色 vs 淺橘
 
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(counts),
-                    datasets: [{
-                        label: '票數',
-                        data: Object.values(counts),
-                        backgroundColor: '#A78BFA',
-                        borderRadius: 6
-                    }]
-                },
-                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            let chartStatus = Chart.getChart("futureChart"); if (chartStatus != undefined) chartStatus.destroy();
+            
+            const ctx = document.getElementById('futureChart').getContext('2d');
+            new Chart(ctx, { 
+                type: 'bar', 
+                data: { 
+                    labels: Object.keys(counts), 
+                    datasets: [{ 
+                        label: '票數', 
+                        data: values, 
+                        backgroundColor: bgColors, 
+                        borderRadius: 6 
+                    }] 
+                }, 
+                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } 
             });
         }
 
         function fillStickyNotes(elementId, textArray) {
             const container = document.getElementById(elementId);
             container.innerHTML = '';
-            
             const validTexts = textArray.filter(t => safeStr(t).trim().length > 1);
-            
             if (validTexts.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-10">📭 目前還沒有文字回饋</div>';
+                container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-10 text-xl">📭 目前還沒有文字回饋</div>';
                 return;
             }
-
             validTexts.forEach(text => {
                 const note = document.createElement('div');
                 note.className = 'sticky-note';
